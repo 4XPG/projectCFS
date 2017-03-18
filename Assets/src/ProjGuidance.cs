@@ -17,7 +17,8 @@ public class ProjGuidance : MonoBehaviour {
 	public Transform lockedTarget;
 
 	public float seekerFOV = 15.0f;
-	public float pitbullDelay = 1.0f;
+	private float trackETA;
+	public float trackDelay = 1.0f; // radar AAM only
 	// Use this for initialization
 
 	private float curDistance;
@@ -26,12 +27,6 @@ public class ProjGuidance : MonoBehaviour {
 	private GameObject[] targets;
 	private bool TargetLock = false;
 	private int TargetAspect; // 0 = air; 1 = ground 
-
- 	public IEnumerator trackDelay ()
- 	{ 
-		yield return new WaitForSeconds(pitbullDelay);
-		TrackTarget();	    	
-	}
 
 	void Start () {
 			//target = GameObject.FindGameObjectWithTag("Air");
@@ -48,8 +43,11 @@ public class ProjGuidance : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void FixedUpdate () {
+		trackETA += Time.deltaTime;	
+		if(trackETA >= trackDelay){
+			TrackTarget();
+			}	
 	}
 
  	public void TrackTarget(){
@@ -66,6 +64,7 @@ public class ProjGuidance : MonoBehaviour {
          Vector3 cross = Vector3.Cross(transform.forward, targetDelta);
   
      	 proj.GetComponent<Rigidbody>().AddTorque(cross * angleDiff * proj.turnRate);
+     	 proj.GetComponent<Rigidbody>().transform.LookAt(lockedTarget.position);
  		
  	}
 }

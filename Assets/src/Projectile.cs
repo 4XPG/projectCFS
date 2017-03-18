@@ -46,18 +46,27 @@ public class Projectile : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-		// wait until fuse
 		timeSinceLaunch += Time.deltaTime;	
-		if(timeSinceLaunch >= fuseDelay){
-			if(timeSinceLaunch <= BoostFuel){
-	    		ProjSpeed = 100.0f;	
-    			gameObject.GetComponent<Rigidbody>().velocity = transform.forward * ProjSpeed;
-    			//if(guidance.lockedTarget != null){	  		
-    				StartCoroutine(gameObject.GetComponent<ProjGuidance>().trackDelay());
-    			//}
+		if(projType == ProjTypes.Missile){
+			// wait until fuse
+			if(timeSinceLaunch >= fuseDelay){
+				if(timeSinceLaunch <= BoostFuel){
+	    			ProjSpeed = 100.0f;	
+    				gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
+    				//if(guidance.lockedTarget != null){	  		
+    				//}
 
-			}	
-	}
+				}	
+			}
+		}
+		else if(projType == ProjTypes.Bomb){
+				gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
+		}
+		else if(projType == ProjTypes.Gun){
+
+		}
+
+
 
 
 
