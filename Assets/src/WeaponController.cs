@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class FireWeapon : MonoBehaviour {
+public class WeaponController : MonoBehaviour {
 	public Projectile[] Payloads;
 	public GameObject gun;
 	public AeroplanePhysics parentplane;
@@ -10,62 +10,73 @@ public class FireWeapon : MonoBehaviour {
     private int nrweapon;
     public HUDHandling HUD;
 	private string weaponHUD = "SRM"; // default mode
-
-    private float wpnselection;
-	public Transform[] launchpos;
 	public Transform gunpos;
 	private Rigidbody projectileRB;
 
+	private int maxgunammo = 512;
+	private int gunammo;
 
 	// Use this for initialization
 	void Start () {
-		//HUD.modetext = weaponHUD;
-        SwitchWeapon(currentWeapon);
-        wpnselection = Input.GetAxis("Weaponswitch");
+		gunammo = maxgunammo;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		HUD.AmmoCounter.text = gunammo.ToString();
 		if (Input.GetKeyDown ("1")) {
+			//SwitchWeapon(0);
 			currentWeapon = 0;
-			SwitchWeapon(currentWeapon);
 			HUD.modetext.text = "SRM";	
-		}
-		if (Input.GetKeyDown ("2")) {
+		} else if (Input.GetKeyDown ("2")) {
+			//SwitchWeapon(1);
 			currentWeapon = 1;
-			SwitchWeapon(currentWeapon);
 			HUD.modetext.text = "MRM";	
-		}
-		if (Input.GetKeyDown ("3")) {
+		} else if (Input.GetKeyDown ("3")) {
+			//SwitchWeapon(2);
 			currentWeapon = 2;
-			SwitchWeapon(currentWeapon);
 			HUD.modetext.text = "MRM";	
-		}
-		if (Input.GetKeyDown ("4")) {
+		} else if (Input.GetKeyDown ("4")) {
 			currentWeapon = 3;
-			SwitchWeapon(currentWeapon);
+			//SwitchWeapon(3);
 			HUD.modetext.text = "CCIP";	
-		}
-		if (Input.GetKeyDown ("5")) {
+		} else if (Input.GetKeyDown ("5")) {
 			currentWeapon = 4;
-			SwitchWeapon(currentWeapon);
+			//SwitchWeapon(4);
 			HUD.modetext.text = "AGM";	
-		}
-		/*
-         for (int i=0; i <= nrweapon; i++)    { 
-             if (wpnselection == -1) {
+		} else if (Input.GetKeyDown (KeyCode.C)) {
+			//currentWeapon = 4;
+			//SwitchWeapon(4);
+			HUD.modetext.text = "LCOS";	
 
-             }
-             else if (wpnselection == 1){
-                currentWeapon = i+1;
-                SwitchWeapon(currentWeapon);
-				HUD.HUDMode.text = "CCIP";
-             }
-         }   */  
+		} /*else {
+			currentWeapon = 0;
+			HUD.modetext.text = "SRM";			
+		}*/
+
 
 	    if(Input.GetButtonDown("Fire1"))
     {
-    		Fire(currentWeapon);
+			if (currentWeapon == 0) {
+				Debug.Log ("Fox Two");
+				Fire (currentWeapon);
+			} else if (currentWeapon == 1) {
+				Debug.Log ("Fox One");
+				Fire (currentWeapon);				
+			} else if (currentWeapon == 2) {
+				Debug.Log ("Fox Three");
+				Fire (currentWeapon);				
+			} else if (currentWeapon == 3) {
+				Debug.Log ("Pickle");
+				Fire (currentWeapon);				
+			} else if (currentWeapon == 4) {
+				Debug.Log ("Rifle");
+				Fire (currentWeapon);				
+			} else if (currentWeapon > 4){
+				FireGun ();
+			}
+
+
         }
 	    if(Input.GetButton("Fire2"))
     {
@@ -74,10 +85,10 @@ public class FireWeapon : MonoBehaviour {
 	}
 
     public void SwitchWeapon(int index) {
- 
-         for (int i=0; i < nrweapon; i++)    {
+		for (int i=0; i < Payloads.Length; i++)    {
              if (i == index) {
-                 Payloads[i].gameObject.SetActive(true);
+                Payloads[i].gameObject.SetActive(true);
+				currentWeapon = index;
              } else { 
                  Payloads[i].gameObject.SetActive(false);
              }
@@ -85,7 +96,7 @@ public class FireWeapon : MonoBehaviour {
     }
 
    public void Fire(int wpn){
-   		Instantiate(Payloads[wpn], transform.position,transform.rotation);
+   		Instantiate(Payloads[wpn], Payloads[wpn].transform.position,transform.rotation);
  	}
 
 	/*void Fire(){
@@ -103,19 +114,18 @@ public class FireWeapon : MonoBehaviour {
 	}*/
 
 	void FireGun(){
-    // Create the Bullet from the Bullet Prefab
-    var bullet = (GameObject)Instantiate (
-        gun,
-        gunpos.position,
-        gunpos.rotation);
-
-    // Add velocity to the bullet
-    bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 1500.0f;
-
-    // Destroy the bullet after 2 seconds
-    Destroy(bullet, 3.0f);
-	}	
-
+		// Create the Bullet from the Bullet Prefab
+		if (gunammo > 0) {
+			var bullet = (GameObject)Instantiate (gun, gunpos.position, gunpos.rotation);
+			// Add velocity to the bullet
+			bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 1500.0f;
+			// Destroy the bullet after 2 seconds
+			Destroy (bullet, 3.0f);
+			gunammo--;
+		} else {
+			Debug.Log ("Gun Winchester!");
+		}
+	}
     /*void OnCollisionEnter (Collision col)
     {
         if(col.gameObject.tag = "Weapon")

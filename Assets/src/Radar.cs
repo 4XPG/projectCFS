@@ -1,4 +1,4 @@
-﻿//TODO: fix radar position
+﻿//can also be used for RWR
  
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,13 +8,18 @@ public class Radar : MonoBehaviour
 {
  
 	public enum RadarLocations : int {MFDLeft, MFDRight};
+	public enum RadarModes : int {NAV, TWS, GM}; // NAV/passive, Track While Search, Ground Map
  
 	// Display Location
 	public RadarLocations radarLocation = RadarLocations.MFDLeft;
+	public RadarModes radarMode = RadarModes.NAV;
 	public Vector2 radarLocationCustom;
 	public Color radarBackgroundA = new Color(255, 255, 0);
 	public Color radarBackgroundB = new Color(0, 255, 255);
-	public Texture2D radarTexture;
+	public Texture2D radarTexture; // default/NAV
+	public Texture2D radarTextureNAV; // default/NAV
+	public Texture2D radarTextureAA; // Air-to-air/TWS
+	public Texture2D radarTextureAG; // Air-to-ground/GM
 	public float radarSize = 0.30f;  // The amount of the screen the radar will use
 	public float radarZoom = 1.00f;
  
@@ -24,21 +29,13 @@ public class Radar : MonoBehaviour
 	public string radarCenterTag;
  
 	// Blip information
-	public bool   radarBlip1Active;
+	public bool   radarBlip1Active; // Air objects
 	public Color  radarBlip1Color = new Color(0, 0, 255);
 	public string radarBlip1Tag;
  
-	public bool   radarBlip2Active;
+	public bool   radarBlip2Active; // Ground objects
 	public Color  radarBlip2Color = new Color(0, 255, 0);
 	public string radarBlip2Tag;
- 
-	public bool   radarBlip3Active;
-	public Color  radarBlip3Color = new Color(255, 0, 0);
-	public string radarBlip3Tag;
- 
-	public bool   radarBlip4Active;
-	public Color  radarBlip4Color = new Color(255, 0, 255);
-	public string radarBlip4Tag;
  
 	// Internal vars
 	private GameObject _centerObject;
@@ -51,8 +48,6 @@ public class Radar : MonoBehaviour
 	private Texture2D  _radarCenterTexture;
 	public Texture2D  _radarBlip1Texture;
 	private Texture2D  _radarBlip2Texture;
-	private Texture2D  _radarBlip3Texture;
-	private Texture2D  _radarBlip4Texture;
 
 	public RectTransform radarPos;
 	public RectTransform MFDLeftPos;
@@ -72,14 +67,10 @@ public class Radar : MonoBehaviour
 		_radarCenterTexture = new Texture2D(16, 16, TextureFormat.RGB24, false);
 		//_radarBlip1Texture = new Texture2D(16, 16, TextureFormat.RGB24, false);
 		_radarBlip2Texture = new Texture2D(16, 16, TextureFormat.RGB24, false);
-		_radarBlip3Texture = new Texture2D(16, 16, TextureFormat.RGB24, false);
-		_radarBlip4Texture = new Texture2D(16, 16, TextureFormat.RGB24, false);
  
 		CreateBlipTexture(_radarCenterTexture, radarCenterColor);
 		CreateBlipTexture(_radarBlip1Texture, radarBlip1Color);
 		CreateBlipTexture(_radarBlip2Texture, radarBlip2Color);
-		CreateBlipTexture(_radarBlip3Texture, radarBlip3Color);
-		CreateBlipTexture(_radarBlip4Texture, radarBlip4Color);
  
  
 		// Get our center object
@@ -116,24 +107,6 @@ public class Radar : MonoBehaviour
 			foreach (GameObject go in gos)
 			{
 				drawBlip(go, _radarBlip2Texture);
-			}
-		}
-		if (radarBlip3Active)
-		{
-			gos = GameObject.FindGameObjectsWithTag(radarBlip3Tag); 
- 
-			foreach (GameObject go in gos)
-			{
-				drawBlip(go, _radarBlip3Texture);
-			}
-		}
-		if (radarBlip4Active)
-		{
-			gos = GameObject.FindGameObjectsWithTag(radarBlip4Tag); 
- 
-			foreach (GameObject go in gos)
-			{
-				drawBlip(go, _radarBlip4Texture);
 			}
 		}
  
@@ -205,6 +178,22 @@ public class Radar : MonoBehaviour
 			radarPos.anchoredPosition = MFDRightPos.anchoredPosition;
 		}					
 	} 
- 
- 
+ 	
+	public void switchRadarMode(int radarMode){
+		if (radarMode == 0) { // TWS mode
+			//TODO: change radar background texture
+			radarTexture = radarTextureAA;
+			radarBlip1Active = true;
+			radarBlip2Active = false;
+		} else if (radarMode == 1) { // GM mode
+			//TODO: change radar background texture
+			radarTexture = radarTextureAG;
+			radarBlip1Active = false;
+			radarBlip2Active = true;
+		} else { // NAV mode
+			radarTexture = radarTextureNAV;
+			radarBlip1Active = false;
+			radarBlip2Active = false;			
+		}
+	}
 }

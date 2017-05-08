@@ -2,9 +2,8 @@
 using System.Collections;
 
 public class Collisioncheck : MonoBehaviour {
-	public void onCollision(Collision collision){
-		Destroy(gameObject,0);
-	}
+
+	public GameObject explosion;
 
 	// Use this for initialization
 	void Start () {
@@ -14,5 +13,11 @@ public class Collisioncheck : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	void OnCollisionEnter(){
+		GameObject expl = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+		Destroy(gameObject); // destroy the grenade
+		//Destroy(expl, 3); // delete the explosion after 3 seconds
 	}
 }

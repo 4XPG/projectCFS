@@ -3,9 +3,12 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class HUDHandling : MonoBehaviour {
+	public enum HUDModes : int {NAV, AA, AG}; // NAV/default, Air-to-air, Air-to-ground
 
+
+	public HUDModes HudMode = HUDModes.NAV;
 	private GameObject playerObject;
- 	private GameObject ownObject;
+ 	private GameObject targetObject;
 	private float heading;
 	private float pitch;
 	private float roll;
@@ -13,8 +16,7 @@ public class HUDHandling : MonoBehaviour {
 	private float lastLocation;
 	private float altitude = 0.0f;
 	private Vector3 iasbar;
-	private Vector3 lastPos;
-	private RaycastHit hit;
+	private RaycastHit hit	;
 
 	private float topSpeed = 145.0f;
 	private float velscrollspeed;
@@ -30,17 +32,20 @@ public class HUDHandling : MonoBehaviour {
 	private float rationAlttoPixel;
     private float rationAngleToPixel;
     private float numberOfPixelsNorthToNorth = 1216.0f;
-	private float numberOfPixelstoMaxVel	 = 1200.0f;
+	private float numberOfPixelstoMaxVel	 = 1184.0f;
 	private float numberOfPixelstoMaxPitch	 = 1184.0f;
 	private float altLimit	 = 1200.0f;
 	private float velstartcoord;
 	private float altstartcoord;
 	private float pitchstartcoord;
+	private float aspectstartangle;
 	private float climbrate;
 	private float machspeed;
 	private float currentAoA;
 	private float maxAoA; // also AoA limiter???
 	private float p;
+	private float targetrng;
+	private float targetalt;
 	public float rollangle;
 
 	private float pitchf; private float rollf; private float yawf;
@@ -49,23 +54,38 @@ public class HUDHandling : MonoBehaviour {
 	public RectTransform velscale;
 	public RectTransform altscale;
 	public RectTransform pitchladder;
+	public RectTransform TDBox;
+	public RectTransform ASECircle;
+	public RectTransform ASECaret;
+	public RectTransform DLZCaret;
+	public RectTransform radarHorizon;
+	public RectTransform bankIndicatorCaret;
+
 	//public RectTransform bankind;
 
 	public RectTransform fpm;
+	private AeroplanePhysics tgtac;
 	public AeroplanePhysics ac;
+	public Text modetext;
 	public Text vel;
 	public Text alt;
 	public Text hdg;
 	public Text machind;
 	public Text curAoA;
 	public Text peakAoA;
-	
+	public Text Tgt_Alt;
+	public Text Tgt_Rng;
+	public Text AmmoCounter;
+
+	public Radar radar;
+	public WeaponController wp;
+	private int selectedWeapon;
+
 	// Use this for initialization
 	void Start () {
-		ownObject = GameObject.FindGameObjectWithTag("PlayerAbstract");
-		//lastLocation = ownObject.transform.position;
 		playerObject = GameObject.FindGameObjectWithTag("Player");
-		lastPos = ownObject.transform.position;
+		targetObject = GameObject.FindGameObjectWithTag ("Air");
+		tgtac = targetObject.GetComponent<AeroplanePhysics>();
 		iasbar = velscale.localPosition;
 		hdginitialpos = hdgscale.localPosition;
 		velinitialpos = velscale.localPosition;
@@ -76,9 +96,9 @@ public class HUDHandling : MonoBehaviour {
 		altstartcoord = altscale.localPosition.y;
 		pitchstartcoord = pitchladder.localPosition.y;
 		ladderinitialpos = pitchladder.localPosition;
-
+		aspectstartangle = ASECaret.rotation.z;
+		selectedWeapon = wp.currentWeapon;
 		//altscale init
-
 	}
 	
 	// Update is called once per frame
@@ -89,7 +109,7 @@ public class HUDHandling : MonoBehaviour {
      rationAlttoPixel = altitude / ac.PitchAngle; // climb/dive rate?
      if(altitude > 0){
 	 	//velscale.anchoredPosition = Mathf.Lerp(velstartcoord,numberOfPixelstoMaxVel,rationVeltoPixel);
-	 	altscale.anchoredPosition = altinitialpos + (new Vector3(0,Mathf.Lerp(altitude,altLimit,climbrate) * ac.PitchAngle,0));  //TODO: make the texture loops
+	 	altscale.anchoredPosition = altinitialpos + (new Vector3(0,Mathf.Lerp(altitude,altLimit,climbrate) * ac.PitchAngle,0));
      }
      else if(altitude == 0){
  	 	altscale.anchoredPosition = altinitialpos;    	
@@ -118,12 +138,17 @@ public class HUDHandling : MonoBehaviour {
      //fpm movement is dictated by raycast shoot from aircraft
 
      // pitch ladder
-     
+	 float rot = playerObject.transform.rotation.z;
      var localFlatForward = transform.InverseTransformDirection(pitchladder.transform.forward); //TODO: fix ladder movement/rotation
-     	pitchladder.localRotation = Quaternion.AngleAxis(rollf, localFlatForward) * pitchladder.localRotation;
-     pitchladder.localPosition = ladderinitialpos + (new Vector3(0,Mathf.Lerp(pitchstartcoord,numberOfPixelstoMaxPitch,ac.PitchAngle),0));  
+		Vector3 playerPos = playerObject.transform.position;
+		//Quaternion plRotation = Quaternion.LookRotation(playerPos - pitchladder.localposition);
+		Quaternion plRotation = Quaternion.AngleAxis(playerObject.transform.rotation.x,Vector3.up);
+		//pitchladder.localRotation = Quaternion.Slerp(pitchladder.localRotation,plRotation, Time.deltaTime);
+		pitchladder.localRotation = Quaternion.Euler(0,0,playerObject.transform.rotation.eulerAngles.z);
+    pitchladder.localPosition = ladderinitialpos + (new Vector3(0,Mathf.Lerp(pitchstartcoord,numberOfPixelstoMaxPitch,ac.PitchAngle),0));  
 	 
-
+	radarHorizon.localRotation = Quaternion.Slerp(radarHorizon.localRotation,playerObject.transform.rotation, Time.deltaTime);
+		bankIndicatorCaret.localRotation = Quaternion.Slerp(radarHorizon.localRotation,playerObject.transform.rotation, Time.deltaTime);
      // FPM
      p = ac.PitchAngle * 1.5f + 128.0f; //TODO: synchronize with plane movement
      rollf = ac.RollAngle * 1.5f;
@@ -133,6 +158,21 @@ public class HUDHandling : MonoBehaviour {
 
      // mach indicator
      machspeed = ias / 767.269f;
+
+	// target altitude & range
+		if (targetObject != null) {
+			targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position);
+			targetalt = tgtac.Altitude;
+
+			//A-SEC caret
+			Vector3 tgtaspect = targetObject.transform.position - playerObject.transform.position;
+			float angle = Mathf.Atan2 (tgtaspect.y, tgtaspect.x) * Mathf.Rad2Deg;
+			ASECaret.localRotation = Quaternion.Euler (0, 0, aspectstartangle + angle);
+		} else {
+			targetrng = 0;
+			targetalt = 0;
+		}
+
 	}
 
 	void OnGUI () {
@@ -141,20 +181,36 @@ public class HUDHandling : MonoBehaviour {
 		vel.text = (Mathf.Round(ias)).ToString();
 		machind.text = (System.Math.Round(machspeed,2)).ToString();
 		curAoA.text = (Mathf.Round(ac.PitchAngle)).ToString();
+		Tgt_Rng.text = (Mathf.Round(targetrng)).ToString();
+		Tgt_Alt.text = (System.Math.Round(targetalt,2)).ToString();
 	 	//GUI.Label(new Rect(20,0,100,40), heading.ToString());
      	//GUI.Label(new Rect(20,50,100,40), pitch.ToString());
      	//GUI.Label(new Rect(20,100,100,40), roll.ToString());
 	}
 
-	Vector3 ProjectPointOnPlane(Vector3 planeNormal  ,   Vector3 planePoint  ,   Vector3 point){
-		planeNormal.Normalize();
-        float distance= -Vector3.Dot(planeNormal.normalized, (point - planePoint));
-        return point + planeNormal * distance;
+	public void switchHUDMode(int HUDMode){
+		if (selectedWeapon == 0) { // SRM HUDmode
+			//SwitchWeapon(0);
+			//currentWeapon = 0;
+			modetext.text = "SRM";	
+		} else if (selectedWeapon == 1) { // SRM HUDmode
+			//SwitchWeapon(0);
+			//currentWeapon = 0;
+			modetext.text = "MRM";	
+		} else if (selectedWeapon == 2) { // SAR-AAM HUDmode
+			//SwitchWeapon(0);
+			//currentWeapon = 0;
+			modetext.text = "MRM";	
+		} else if (selectedWeapon == 3) { // AR-AAM HUDmode
+			//SwitchWeapon(0);
+			//currentWeapon = 0;
+			modetext.text = "AGM";	
+		} else if (selectedWeapon == 4) { // CCIP HUDmode
+			//SwitchWeapon(0);
+			//currentWeapon = 0;
+			modetext.text = "CCIP";	
+		} else if (selectedWeapon == 5) { // LCOS HUDmode
+			
+		}
 	}
-	 	float SignedAngle ( Vector3 v1 ,  Vector3 v2 ,   Vector3 normal  ){
-     	Vector3 perp= Vector3.Cross(normal, v1);
-     	float angle= Vector3.Angle(v1, v2);
-     	angle *= Mathf.Sign(Vector3.Dot(perp, v2));
-     	return angle;
- 	}	
 }

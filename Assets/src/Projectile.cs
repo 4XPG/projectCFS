@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour {
 	private float parentcraftvel;
 	private float timeSinceLaunch = 0.0f;
 
-
+	public GameObject explosion;
 	public GameObject parentcraft;
 
 	// Use this for initialization
@@ -50,13 +50,18 @@ public class Projectile : MonoBehaviour {
 		if(projType == ProjTypes.Missile){
 			// wait until fuse
 			if(timeSinceLaunch >= fuseDelay){
-				if(timeSinceLaunch <= BoostFuel){
-	    			ProjSpeed = 100.0f;	
-    				gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
-    				//if(guidance.lockedTarget != null){	  		
-    				//}
+				//start tracking
+				if (timeSinceLaunch <= BoostFuel) {
+					//ProjSpeed = 100.0f;	
+					//start emitting flame & smoke particle
+					//if(guidance.lockedTarget != null){	  		
+					//}
 
-				}	
+				} else if (timeSinceLaunch > BoostFuel) {
+					ProjSpeed = 0.0f;
+					//stop emitting flame & smoke particle
+				}
+				gameObject.GetComponent<Rigidbody> ().velocity = transform.forward * (ProjSpeed + parentcraftvel);
 			}
 		}
 		else if(projType == ProjTypes.Bomb){
@@ -85,7 +90,11 @@ public class Projectile : MonoBehaviour {
  		}*/
 	}
 
-
+	void OnCollisionEnter(){
+		GameObject expl = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+		Destroy(gameObject); // destroy the grenade
+		//Destroy(expl, 3); // delete the explosion after 3 seconds
+	}
 
 
 
