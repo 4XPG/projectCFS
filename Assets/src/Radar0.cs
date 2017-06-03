@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
  
-public class Radar : MonoBehaviour
+public class Radar0 : MonoBehaviour
 {
  
 	public enum RadarLocations : int {MFDLeft, MFDRight};

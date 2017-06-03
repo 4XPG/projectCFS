@@ -31,9 +31,10 @@ public class HUDHandling : MonoBehaviour {
 	private float rationVeltoPixel;
 	private float rationAlttoPixel;
     private float rationAngleToPixel;
+    private float rationPitchToPixel;
     private float numberOfPixelsNorthToNorth = 1216.0f;
 	private float numberOfPixelstoMaxVel	 = 1184.0f;
-	private float numberOfPixelstoMaxPitch	 = 1184.0f;
+	private float numberOfPixelstoMaxPitch	 = 7200.0f;
 	private float altLimit	 = 1200.0f;
 	private float velstartcoord;
 	private float altstartcoord;
@@ -53,6 +54,7 @@ public class HUDHandling : MonoBehaviour {
 	public RectTransform hdgscale;
 	public RectTransform velscale;
 	public RectTransform altscale;
+    public RectTransform ladder;
 	public RectTransform pitchladder;
 	public RectTransform TDBox;
 	public RectTransform ASECircle;
@@ -84,7 +86,7 @@ public class HUDHandling : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		playerObject = GameObject.FindGameObjectWithTag("Player");
-		targetObject = GameObject.FindGameObjectWithTag ("Air");
+		targetObject = GameObject.FindGameObjectWithTag ("SelectedTarget");
 		tgtac = targetObject.GetComponent<AeroplanePhysics>();
 		iasbar = velscale.localPosition;
 		hdginitialpos = hdgscale.localPosition;
@@ -92,6 +94,7 @@ public class HUDHandling : MonoBehaviour {
 		altinitialpos = altscale.localPosition;
 		fpminitialpos = fpm.localPosition;
 		rationAngleToPixel = numberOfPixelsNorthToNorth / 360f;
+        rationPitchToPixel = numberOfPixelstoMaxPitch / 360f;
 		velstartcoord = velscale.localPosition.y;
 		altstartcoord = altscale.localPosition.y;
 		pitchstartcoord = pitchladder.localPosition.y;
@@ -144,17 +147,21 @@ public class HUDHandling : MonoBehaviour {
 		//Quaternion plRotation = Quaternion.LookRotation(playerPos - pitchladder.localposition);
 		Quaternion plRotation = Quaternion.AngleAxis(playerObject.transform.rotation.x,Vector3.up);
 		//pitchladder.localRotation = Quaternion.Slerp(pitchladder.localRotation,plRotation, Time.deltaTime);
-		pitchladder.localRotation = Quaternion.Euler(0,0,playerObject.transform.rotation.eulerAngles.z);
-    pitchladder.localPosition = ladderinitialpos + (new Vector3(0,Mathf.Lerp(pitchstartcoord,numberOfPixelstoMaxPitch,ac.PitchAngle),0));  
+		ladder.localRotation = Quaternion.Euler(0,0,(playerObject.transform.rotation.eulerAngles.z * -1));
+        Vector3 perp2 = Vector3.Cross(Vector3.up, playerObject.transform.up);
+        float pdir = Vector3.Dot(perp2,Vector3.forward);
+    //pitchladder.localPosition = ladderinitialpos + (new Vector3(0,Mathf.Lerp(pitchstartcoord,numberOfPixelstoMaxPitch,ac.PitchAngle),0));
+        pitchladder.localPosition = ladderinitialpos + (new Vector3(0,Vector3.Angle(playerObject.transform.up,Vector3.up) * Mathf.Sign(pdir) * rationPitchToPixel,0));
 	 
 	radarHorizon.localRotation = Quaternion.Slerp(radarHorizon.localRotation,playerObject.transform.rotation, Time.deltaTime);
-		bankIndicatorCaret.localRotation = Quaternion.Slerp(radarHorizon.localRotation,playerObject.transform.rotation, Time.deltaTime);
+        bankIndicatorCaret.localRotation = Quaternion.Euler(0,0,playerObject.transform.rotation.eulerAngles.z);
+		//bankIndicatorCaret.localRotation = Quaternion.Slerp(radarHorizon.localRotation,playerObject.transform.rotation.eulerAngles, Time.deltaTime);
      // FPM
      p = ac.PitchAngle * 1.5f + 128.0f; //TODO: synchronize with plane movement
      rollf = ac.RollAngle * 1.5f;
      //fpm.rotation = Quaternion.AngleAxis(ac.RollAngle, Vector3.back);
-     fpm.rotation = Quaternion.Euler(0,0, rollf);
-     fpm.anchoredPosition = fpminitialpos + (new Vector3(playerObject.transform.forward.x, playerObject.transform.forward.y, playerObject.transform.forward.z));
+     fpm.localRotation = Quaternion.Euler(0,0,(playerObject.transform.rotation.eulerAngles.z * -1));
+     fpm.localPosition = fpminitialpos + new Vector3((Vector3.Angle(playerObject.transform.forward,Vector3.forward) * Mathf.Sign(dir)),(Vector3.Angle(playerObject.transform.up,Vector3.up) * Mathf.Sign(pdir)),0) ;
 
      // mach indicator
      machspeed = ias / 767.269f;
@@ -192,25 +199,25 @@ public class HUDHandling : MonoBehaviour {
 		if (selectedWeapon == 0) { // SRM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "SRM";	
+			modetext.text = "SRM";
 		} else if (selectedWeapon == 1) { // SRM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "MRM";	
+			modetext.text = "MRM";
 		} else if (selectedWeapon == 2) { // SAR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "MRM";	
+			modetext.text = "MRM";
 		} else if (selectedWeapon == 3) { // AR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "AGM";	
+			modetext.text = "AGM";
 		} else if (selectedWeapon == 4) { // CCIP HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "CCIP";	
+			modetext.text = "CCIP";
 		} else if (selectedWeapon == 5) { // LCOS HUDmode
-			
+
 		}
 	}
 }

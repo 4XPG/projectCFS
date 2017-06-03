@@ -31,3 +31,6 @@ ehthumbs.db
 Thumbs.db
 *.psd
 *.meta
+/.consulo
+Assets/EXPERIMENTAL
+Assets/Missile Systems

@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour {
 	public float BoostFuel = 0.0f; // how long the rocket motor lives
 	public float turnRate = 0.8f;
 	public float proxymityrange = 0.1f;
-
+	public bool Fire = false;
 
 	//private ParticleSystem SmokePrefab;
 	//private AudioClip missileClip;
@@ -19,6 +19,7 @@ public class Projectile : MonoBehaviour {
 
 	private Vector3 distanceDelta;
 	private Vector3 playerPos;
+	public Vector3 projAccel;
 
 	private ProjGuidance guidance;
 	private float parentcraftvel;
@@ -32,8 +33,9 @@ public class Projectile : MonoBehaviour {
 
 
 	void Start () {
-			parentcraftvel = parentcraft.GetComponent<Rigidbody>().velocity.magnitude* 0.5f;
-			guidance = parentcraft.GetComponent<ProjGuidance>();
+        //ProjSpeed = 0.0f;
+        //parentcraftvel = parentcraft.GetComponent<Rigidbody>().velocity.magnitude* 0.5f;
+        guidance = parentcraft.GetComponent<ProjGuidance>();
     		//lockedTarget.position = target.position;
             //projectileRB = GetComponent<Rigidbody>();
             //Fire();
