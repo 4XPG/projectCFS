@@ -16,7 +16,7 @@ public class Collisioncheck : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(){
-		GameObject expl = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy(gameObject); // destroy the grenade
 		//Destroy(expl, 3); // delete the explosion after 3 seconds
 	}

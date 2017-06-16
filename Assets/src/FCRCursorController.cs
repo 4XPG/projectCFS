@@ -27,18 +27,24 @@ public class FCRCursorController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 		Vector3 CursorPos = cursorObject.anchoredPosition;
-		if (Input.GetKey ("'")) {
+
+		if (Input.GetKey ("'") && (CursorPos.y <= 76.0f)) {
 			CursorPos.y++;
+            Debug.Log(CursorPos);
 		}
-		if (Input.GetKey (",")) {
+		if (Input.GetKey (",") && (CursorPos.x >= -76.0f)) {
 			CursorPos.x--;
+            Debug.Log(CursorPos);
 		}
-		if (Input.GetKey (".")) {
+		if (Input.GetKey (".") && (CursorPos.y >= -76.0f)) {
 			CursorPos.y--;
+            Debug.Log(CursorPos);
 		}
-		if (Input.GetKey ("/")) {
+		if (Input.GetKey ("/")&& (CursorPos.x <= 76.0f)) {
 			CursorPos.x++;
+            Debug.Log(CursorPos);
 		}
 		cursorObject.anchoredPosition = CursorPos;
 	}

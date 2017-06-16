@@ -3,13 +3,6 @@ using System.Collections;
 
 public class ProjGuidance : MonoBehaviour {
 
-	public enum GuidanceTypes : int {None,Infrared,SemiActiveRadar,ActiveRadar,ElectroOptical};
-	public enum TargetTypes : int {AirToAir,AirToGround,SurfaceToAir};
-
-
-	public GuidanceTypes guidanceType = GuidanceTypes.ActiveRadar;
-	public TargetTypes targetType = TargetTypes.AirToAir;
-
 	public Projectile proj;
 	public GameObject target;
 	public Transform lockedTarget;
@@ -38,7 +31,8 @@ public class ProjGuidance : MonoBehaviour {
 	private static float TargetAccel = 9.8f;
 
 	void Start() {
-			//target = GameObject.FindGameObjectWithTag("Air");
+			target = GameObject.FindGameObjectWithTag("SelectedTarget");
+
 			proj = gameObject.GetComponent<Projectile>();
 		if (target != null) {
 			lockedTarget = target.transform;
@@ -49,36 +43,39 @@ public class ProjGuidance : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		float LOSRate;
-		float closure;
-		Vector3 DeltaLOS;
-		trackETA += Time.deltaTime;	
-		if ((prevpos != Vector3.zero) && (prevtargetpos != Vector3.zero)) {
-			Vector3 oldLOS = prevtargetpos - prevpos;
-			oldLOS.Normalize ();
-			Vector3 currentLOS = lockedTarget.position - transform.position;
-			currentLOS.Normalize ();
-			if (oldLOS.magnitude == 0) {
-				DeltaLOS = new Vector3 (0, 0, 0);
-				LOSRate = 0.0f;
-			} else {
-				DeltaLOS = currentLOS - oldLOS;
-				LOSRate = DeltaLOS.magnitude;
-			}
-			closure = -LOSRate;
-			proj.projAccel = currentLOS * NavGain * closure + DeltaLOS * TargetAccel * (0.5f * NavGain);
-			if (target != null) {
-				if (proj.projType == Projectile.ProjTypes.Missile) {
-					TrackTargetAR ();
-				}
-			}
-		}
 		prevpos = currentpos;
 		prevtargetpos = currentpos;
 	}
 
 	public void TrackTargetIR(){ //limited lock FOV
 	}
+
+
+    public void PNTrack(){
+        float LOSRate;
+        float closure;
+        Vector3 DeltaLOS;
+        trackETA += Time.deltaTime;
+        Debug.Log(target.transform.position);
+        if ((prevpos != Vector3.zero) && (prevtargetpos != Vector3.zero)) {
+            Vector3 oldLOS = prevtargetpos - prevpos;
+            oldLOS.Normalize ();
+            Vector3 currentLOS = lockedTarget.position - transform.position;
+            currentLOS.Normalize ();
+            if (oldLOS.magnitude == 0) {
+                DeltaLOS = new Vector3 (0, 0, 0);
+                LOSRate = 0.0f;
+            } else {
+                DeltaLOS = currentLOS - oldLOS;
+                LOSRate = DeltaLOS.magnitude;
+            }
+            closure = -LOSRate;
+            proj.projAccel = currentLOS * NavGain * closure + DeltaLOS * TargetAccel * (0.5f * NavGain);
+            if (target != null) {
+                    TrackTargetAR ();
+            }
+        }
+    }
 
  	public void TrackTargetAR(){
 
@@ -114,6 +111,69 @@ public class ProjGuidance : MonoBehaviour {
 		//transform.rotation = 
  	}
 
-	public void TrackDot(){ //track raycasted point made by the EO targetting pod
+    public Vector3 FindInterceptVector(Vector3 shotOrigin, float shotSpeed, Vector3 targetOrigin, Vector3 targetVel) {
+
+        Vector3 dirToTarget = Vector3.Normalize(targetOrigin - shotOrigin);
+
+// Decompose the target's velocity into the part parallel to the
+// direction to the cannon and the part tangential to it.
+// The part towards the cannon is found by projecting the target's
+// velocity on dirToTarget using a dot product.
+        Vector3 targetVelOrth = Vector3.Dot(targetVel, dirToTarget) * dirToTarget;
+
+// The tangential part is then found by subtracting the
+// result from the target velocity.
+        Vector3 targetVelTang = targetVel - targetVelOrth;
+
+        /*
+        * targetVelOrth
+        * |
+        * |
+        *
+        * ^...7  <-targetVel
+        * |  /.
+        * | / .
+        * |/ .
+        * t--->  <-targetVelTang
+        *
+        *
+        * s--->  <-shotVelTang
+        *
+        */
+
+// The tangential component of the velocities should be the same
+// (or there is no chance to hit)
+// THIS IS THE MAIN INSIGHT!
+        Vector3 shotVelTang = targetVelTang;
+
+// Now all we have to find is the orthogonal velocity of the shot
+
+        float shotVelSpeed = shotVelTang.magnitude;
+        if (shotVelSpeed > shotSpeed) {
+// Shot is too slow to intercept target, it will never catch up.
+// Do our best by aiming in the direction of the targets velocity.
+            return targetVel.normalized * shotSpeed;
+        } else {
+// We know the shot speed, and the tangential velocity.
+// Using pythagoras we can find the orthogonal velocity.
+            float shotSpeedOrth =
+            Mathf.Sqrt(shotSpeed * shotSpeed - shotVelSpeed * shotVelSpeed);
+            Vector3 shotVelOrth = dirToTarget * shotSpeedOrth;
+
+
+// Find the time of collision (distance / relative velocity)
+            //float timeToCollision = ((shotOrigin - targetOrigin).magnitude - shotRadius - targetRadius) / (shotVelOrth.magnitude-targetVelOrth.magnitude);
+            float timeToCollision = ((shotOrigin - targetOrigin).magnitude) / (shotVelOrth.magnitude-targetVelOrth.magnitude);
+// Calculate where the shot will be at the time of collision
+            Vector3 shotVel = shotVelOrth + shotVelTang;
+            Vector3 shotCollisionPoint = shotOrigin + shotVel * timeToCollision;
+
+// Finally, add the tangential and orthogonal velocities.
+            return shotVelOrth + shotVelTang;
+        }
+    }
+
+	public void TrackDot(GameObject TargetPos){ //track raycasted point made by the EO targetting pod
+        gameObject.transform.LookAt(TargetPos.transform);
 	}
 }

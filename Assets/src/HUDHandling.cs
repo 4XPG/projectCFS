@@ -79,10 +79,9 @@ public class HUDHandling : MonoBehaviour {
 	public Text Tgt_Rng;
 	public Text AmmoCounter;
 
-	public Radar radar;
+	public FCR radar;
 	public WeaponController wp;
-	private int selectedWeapon;
-
+	public int HUDMode;
 	// Use this for initialization
 	void Start () {
 		playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -100,7 +99,7 @@ public class HUDHandling : MonoBehaviour {
 		pitchstartcoord = pitchladder.localPosition.y;
 		ladderinitialpos = pitchladder.localPosition;
 		aspectstartangle = ASECaret.rotation.z;
-		selectedWeapon = wp.currentWeapon;
+		//selectedWeapon = wp.currentWeapon;
 		//altscale init
 	}
 	
@@ -193,31 +192,63 @@ public class HUDHandling : MonoBehaviour {
 	 	//GUI.Label(new Rect(20,0,100,40), heading.ToString());
      	//GUI.Label(new Rect(20,50,100,40), pitch.ToString());
      	//GUI.Label(new Rect(20,100,100,40), roll.ToString());
+        ChangeHUDMode(HUDMode);
 	}
-
-	public void switchHUDMode(int HUDMode){
-		if (selectedWeapon == 0) { // SRM HUDmode
+	public void ChangeHUDMode(int HUDMode){
+		if (HUDMode == 0) { // SRM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "SRM";
-		} else if (selectedWeapon == 1) { // SRM HUDmode
+            AmmoCounter.text = wp.IRMAmmo.ToString();
+		} else if (HUDMode == 1) { // SRM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
-		} else if (selectedWeapon == 2) { // SAR-AAM HUDmode
+            AmmoCounter.text = wp.SAHMAmmo.ToString();
+		} else if (HUDMode == 2) { // SAR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
-		} else if (selectedWeapon == 3) { // AR-AAM HUDmode
+            AmmoCounter.text = wp.ARMAmmo.ToString();
+		} else if (HUDMode == 3) { // AR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "AGM";
-		} else if (selectedWeapon == 4) { // CCIP HUDmode
+            AmmoCounter.text = wp.AGMAmmo.ToString();
+		} else if (HUDMode == 4) { // CCIP HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "CCIP";
-		} else if (selectedWeapon == 5) { // LCOS HUDmode
+            AmmoCounter.text = wp.BombAmmo.ToString();
+		} else if (HUDMode == 5) { // LCOS HUDmode
+            modetext.text = "LCOS";
 
+            AmmoCounter.text = wp.gunammo.ToString();
 		}
 	}
+/*
+    public void LinePointToTarget(){
+
+        Vector3 v3Pos = Camera.main.WorldToViewportPoint(targetObject.transform.position);
+
+        if (v3Pos.z < Camera.main.nearClipPlane)
+            return;  // Object is behind the camera
+
+        if (v3Pos.x >= 0.0f && v3Pos.x <= 1.0f && v3Pos.y >= 0.0f && v3Pos.y <= 1.0f)
+            return; // Object center is visible
+
+        renderer.enabled = true;
+        v3Pos.x -= 0.5f;  // Translate to use center of viewport
+        v3Pos.y -= 0.5f;
+        v3Pos.z = 0;      // I think I can do this rather than do a
+//   a full projection onto the plane
+
+        float fAngle = Mathf.Atan2 (v3Pos.x, v3Pos.y);
+        transform.localEulerAngles = new Vector3(0.0f, 0.0f, -fAngle * Mathf.Rad2Deg);
+
+        v3Pos.x = 0.5f * Mathf.Sin (fAngle) + 0.5f;  // Place on ellipse touching
+        v3Pos.y = 0.5f * Mathf.Cos (fAngle) + 0.5f;  //   side of viewport
+        v3Pos.z = Camera.main.nearClipPlane + 0.01f;  // Looking from neg to pos Z;
+        transform.position = Camera.main.ViewportToWorldPoint(v3Pos);
+    }*/
 }

@@ -4,15 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class FCR : MonoBehaviour {
-	//public Camera FCRCamera;
+	public Camera FCRCamera;
 	public GameObject playerObject;
 	public GameObject[] airObjects;
 	public GameObject[] groundObjects;
-	public RadarIcon[] airIcons;
 	public Transform[] groundpositions;
-    public List<GameObject> airObjectList;
-    public List<RadarIcon> mapenemies;
-    public List<GameObject> groundObjectList;
 	public Image FCRAirCursor;
 	public Image FCRGroundCursor;
 	private Vector3 CameraPos;
@@ -33,21 +29,13 @@ public class FCR : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         StartCoroutine (UpdateMapPos());
-		CameraPos.x = transform.position.x - playerObject.transform.position.x;
-		CameraPos.z = transform.position.z - playerObject.transform.position.z;
-        airObjects = GameObject.FindGameObjectsWithTag ("Air");
-		groundObjects = GameObject.FindGameObjectsWithTag ("Ground");
-		foreach (GameObject aiplanes in airObjects){
-            airObjectList.Add(aiplanes);
-        }
-        airIcons = FindObjectsOfType(typeof(RadarIcon)) as RadarIcon[];
-		foreach (RadarIcon radar in airIcons) {
-            mapenemies.Add(radar);
-		}
+		//CameraPos.x = transform.position.x - playerObject.transform.position.x;
+		//CameraPos.z = transform.position.z - playerObject.transform.position.z;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        radarZoomControl();
         if(playerObject.transform.position!=radar.transform.position){
 //Debug.Log("NOT SAME1");
             radar.transform.position = new Vector3 (playerObject.transform.position.x,radar.transform.position.y,playerObject.transform.position.z);
@@ -59,17 +47,23 @@ public class FCR : MonoBehaviour {
 		//set so that radar icons only moves in z axis 
 	}
 
+    void onGUI(){
+        radarZoomText.text = (RadarzoomLevelSelected).ToString();
+    }
+
     private void radarZoomIn(){
 
     }
-/*    void radarZoomControl(){
-        if (Input.GetKeyDown(name:"o") ){
+    void radarZoomControl(){
+        if (Input.GetKeyDown(name:"t") ){
             zoomchange += 1;
         }
-        else if (Input.GetKeyDown(name:"p") ){
+        else if (Input.GetKeyDown(name:"y") ){
             zoomchange -= 1;
         }
-    }*/
+        RadarzoomLevelSelected = Mathf.Clamp(RadarzoomLevelSelected + zoomchange, 0, RadarZoomLevels.Length -1);
+        FCRCamera.fieldOfView = RadarZoomLevels[RadarzoomLevelSelected];
+    }
 
 	void changeRadarMode(){
 
@@ -80,16 +74,6 @@ public class FCR : MonoBehaviour {
         //enemyobject.tag = "SelectedTarget";
     }
 
-    void AirRadarInit(){
-        AeroplaneAI tempAir = Instantiate(airObjectList[0].gameObject).GetComponent<AeroplaneAI>();
-
-        //airObjectList.Add(tempEnemy);
-        //tempEnemy.rTransform.localRotation = Quaternion.Euler(Vector3.zero);
-        //tempEnemy.rTransform.localScale = new Vector3(1,1,1);
-        //tempEnemy.rTransform.anchoredPosition = Vector3.zero;
-        //tempEnemy.gameObject.SetActive(true);
-    }
-
 
     void OnTriggerEnter(Collider collider){
         Debug.Log("Collide");
@@ -97,7 +81,7 @@ public class FCR : MonoBehaviour {
             BoxCollider colliders = collider.GetComponent<BoxCollider>();
             if(enemies.Contains(collider.gameObject)){
             }else{
-                collider.tag = "LockAir";
+                collider.tag = "Target";
                 Debug.Log(collider.tag);
                 Bogey tempEnemy = Instantiate(mapEnemies[0].gameObject).GetComponent<Bogey>();
                 mapEnemies.Add(tempEnemy);
@@ -113,7 +97,7 @@ public class FCR : MonoBehaviour {
     }
 
     void OnTriggerExit(Collider collider){
-        if(collider.tag == "LockAir"){
+        if(collider.tag == "Target"){
 //BoxCollider colliders = collider.GetComponent<BoxCollider>();
             if(enemies.Contains(collider.gameObject)){
                 Debug.Log("ReleaseEnemy");
