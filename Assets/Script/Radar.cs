@@ -35,12 +35,14 @@ public class Radar : MonoBehaviour {
 				collider.tag = "LockEnemy";
 				Debug.Log(collider.tag);
 				Enemy tempEnemy = Instantiate(mapEnemies[0].gameObject).GetComponent<Enemy>();
+                Vector3 radarIconPos = transform.InverseTransformPoint(tempEnemy.transform.position);
 				mapEnemies.Add(tempEnemy);
 				enemies.Add(collider.gameObject);
 				tempEnemy.rTransform.SetParent(map);
+                tempEnemy.rTransform.localPosition = radarIconPos;
 				tempEnemy.rTransform.localRotation = Quaternion.Euler(Vector3.zero);
-				tempEnemy.rTransform.localScale = new Vector3(1,1,1);
-				tempEnemy.rTransform.anchoredPosition = Vector3.zero;
+				tempEnemy.rTransform.localScale = new Vector3(0.2f,0.2f,0.2f);
+				//tempEnemy.rTransform.anchoredPosition = Vector3.Zero;
 				tempEnemy.gameObject.SetActive(true);
 				//colliders.enabled = false;
 			}

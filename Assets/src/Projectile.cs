@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour {
  	public ProjTypes projType = ProjTypes.IRM;
 	public float fuseDelay = 0.0f;
 	public float ProjSpeed = 0.0f;
-	public float BoostFuel = 10.0f; // how long the rocket motor lives
+	public float BoostFuel = 300.0f; // how long the rocket motor lives
 	public float turnRate = 0.8f;
 	public float proxymityrange = 0.1f;
 	public bool Fire = false;
@@ -22,9 +22,8 @@ public class Projectile : MonoBehaviour {
 	public Vector3 projAccel;
 
 	private ProjGuidance guidance;
-	private float parentcraftvel;
-	private float timeSinceLaunch = 0.0f;
-	private GameObject lockedtarget;
+	private Vector3 parentcraftvel;
+	public GameObject lockedtarget;
 
 	public GameObject explosion;
     public Component missileTrail;
@@ -36,12 +35,14 @@ public class Projectile : MonoBehaviour {
 
 	void Start () {
         //ProjSpeed = 0.0f;
-        parentcraftvel = parentcraft.GetComponent<Rigidbody>().velocity.magnitude;
+        parentcraftvel = parentcraft.GetComponent<Rigidbody>().velocity.normalized;
         guidance = gameObject.GetComponent<ProjGuidance>();
         lockedtarget = GameObject.FindGameObjectWithTag("SelectedTarget");
         //missileTrail = gameObject.GetComponentsInChildren< ParticleSystem >();
         //missileTrail.GetComponent<ParticleEmitter>().enableEmission = false;
-        transform.Find("missiletrail").gameObject.SetActive(false);
+        if(projType != ProjTypes.Bomb)
+            transform.Find("missiletrail").gameObject.SetActive(false);
+        //this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
     		//lockedTarget.position = target.position;
             //projectileRB = GetComponent<Rigidbody>();
             //Fire();
@@ -55,61 +56,28 @@ public class Projectile : MonoBehaviour {
 	void FixedUpdate ()
 	{
 
-		timeSinceLaunch += Time.deltaTime;	
-		if(Fire == true){        if(projType != ProjTypes.Bomb){
-// wait until fuse
-            if(timeSinceLaunch >= fuseDelay){
-//start tracking
-                if (timeSinceLaunch <= BoostFuel) {
-                    Vector3 forwardforce = Vector3.zero;
-                    ProjSpeed = 100.0f;
-                    forwardforce += ProjSpeed * transform.forward;
-                    gameObject.GetComponent<Rigidbody>().AddForce(forwardforce);
-                    transform.Find("missiletrail").gameObject.SetActive(true);
-
-
-
-                    GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
-                } else if (timeSinceLaunch > BoostFuel) {
-                    ProjSpeed = 0.0f;
-                    transform.Find("missiletrail").gameObject.SetActive(false);
-//stop emitting flame & smoke particle
-                }
-
-            }
-        }
-        else if(projType == ProjTypes.AGM){
-
-// wait until fuse
-            if(timeSinceLaunch >= fuseDelay){
-//start tracking
-                if (timeSinceLaunch <= BoostFuel) {
-                    Vector3 forwardforce = Vector3.zero;
-                    ProjSpeed = 100.0f;
-                    forwardforce += ProjSpeed * transform.forward;
-                    gameObject.GetComponent<Rigidbody>().AddForce(forwardforce);
-                    transform.Find("missiletrail").gameObject.SetActive(true);
-
-
-
-                    //GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
-                } else if (timeSinceLaunch > BoostFuel) {
-                    ProjSpeed = 0.0f;
-                    transform.Find("missiletrail").gameObject.SetActive(false);
-//stop emitting flame & smoke particle
-                }
-
-            }
-        }
-        else if(projType == ProjTypes.Bomb){
-            gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
-        }
-        else if(projType == ProjTypes.Gun){
-
-        }
-        }
-
 	}
+
+
+    void UpdateTrajectory ( Vector3 initialPosition, Vector3 initialVelocity, float mass, Vector3 gravity, Vector3 wind ) {
+        int numSteps = 100; // for example
+        float timeDelta = 1.0f / initialVelocity.magnitude; // for example
+
+        Vector3 gravityWind = gravity + (wind / mass);
+
+        LineRenderer lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.SetVertexCount( numSteps );
+
+        Vector3 position = initialPosition;
+        Vector3 velocity = initialVelocity;
+        for ( int i = 0; i < numSteps; ++i ) {
+            lineRenderer.SetPosition( i, position );
+
+            position += velocity * timeDelta + 0.5f * gravityWind * timeDelta * timeDelta;
+            velocity += gravityWind * timeDelta;
+        }
+    }
+
 
     public void CheckTargetAspect(){
 

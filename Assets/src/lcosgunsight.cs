@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class lcosgunsight : MonoBehaviour {
 	public GameObject target;
     public GameObject self;
+    public Camera MainCam;
     public RectTransform gunCrosshair;
     public float projSpeed;
 
@@ -19,6 +21,7 @@ public class lcosgunsight : MonoBehaviour {
     Vector3 interceptPoint;
 	// Use this for initialization
 	void Start () {
+        target = GameObject.FindGameObjectWithTag("SelectedTarget");
 		shooterPosition = self.transform.position;
         targetPosition = target.transform.position;
         shooterVelocity = self.GetComponent<Rigidbody>() ? self.GetComponent<Rigidbody>().velocity : Vector3.zero;
@@ -28,8 +31,41 @@ public class lcosgunsight : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        updateCrosshair();
 	}
+
+    public void updateCrosshair(){
+        Vector3 screenPoint = MainCam.WorldToViewportPoint(target.transform.position);
+        Vector3 screenPos = MainCam.WorldToScreenPoint (interceptPoint);
+        Vector2 screenPos2D = screenPos;
+        bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+        if (target != null) {
+            if (onScreen){
+                Debug.Log("targetpos:"+screenPos2D);
+                gunCrosshair.anchoredPosition = screenPos2D;
+            }
+        }
+    }
+
+
+    public float time_of_impact(float px, float py, float vx, float vy, float s)
+    {
+        float a = s * s - (vx * vx + vy * vy);
+        float b = px * vx + py * vy;
+        float c = px * px + py * py;
+
+        float d = b*b + a*c;
+
+        float t = 0;
+        if (d >= 0)
+        {
+            t = (b + Mathf.Sqrt(d)) / a;
+            if (t < 0)
+                t = 0;
+        }
+
+        return t;
+    }
 
     public static Vector3 FirstOrderIntercept
     (

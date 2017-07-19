@@ -55,13 +55,16 @@ public class HUDHandling : MonoBehaviour {
 	public RectTransform velscale;
 	public RectTransform altscale;
     public RectTransform ladder;
-	public RectTransform pitchladder;
-	public RectTransform TDBox;
+		public RectTransform pitchladder;
+		public RectTransform TDBox;
 	public RectTransform ASECircle;
 	public RectTransform ASECaret;
 	public RectTransform DLZCaret;
 	public RectTransform radarHorizon;
 	public RectTransform bankIndicatorCaret;
+    public RectTransform LinePointer;
+    public RectTransform CCIPSight;
+    public RectTransform LCOSSight;
 
 	//public RectTransform bankind;
 
@@ -86,7 +89,8 @@ public class HUDHandling : MonoBehaviour {
 	void Start () {
 		playerObject = GameObject.FindGameObjectWithTag("Player");
 		targetObject = GameObject.FindGameObjectWithTag ("SelectedTarget");
-		tgtac = targetObject.GetComponent<AeroplanePhysics>();
+        if(targetObject != null)
+			tgtac = targetObject.GetComponent<AeroplanePhysics>();
 		iasbar = velscale.localPosition;
 		hdginitialpos = hdgscale.localPosition;
 		velinitialpos = velscale.localPosition;
@@ -200,29 +204,38 @@ public class HUDHandling : MonoBehaviour {
 			//currentWeapon = 0;
 			modetext.text = "SRM";
             AmmoCounter.text = wp.IRMAmmo.ToString();
+            ASECircle.gameObject.SetActive(true);
 		} else if (HUDMode == 1) { // SRM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
             AmmoCounter.text = wp.SAHMAmmo.ToString();
+            ASECircle.gameObject.SetActive(true);
 		} else if (HUDMode == 2) { // SAR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
             AmmoCounter.text = wp.ARMAmmo.ToString();
+            ASECircle.gameObject.SetActive(true);
 		} else if (HUDMode == 3) { // AR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "AGM";
             AmmoCounter.text = wp.AGMAmmo.ToString();
+            ASECircle.gameObject.SetActive(false);
 		} else if (HUDMode == 4) { // CCIP HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "CCIP";
+            CCIPSight.gameObject.SetActive(true);
+            LCOSSight.gameObject.SetActive(false);
+            ASECircle.gameObject.SetActive(false);
             AmmoCounter.text = wp.BombAmmo.ToString();
 		} else if (HUDMode == 5) { // LCOS HUDmode
             modetext.text = "LCOS";
-
+            CCIPSight.gameObject.SetActive(false);
+			LCOSSight.gameObject.SetActive(true);
+            ASECircle.gameObject.SetActive(false);
             AmmoCounter.text = wp.gunammo.ToString();
 		}
 	}

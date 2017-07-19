@@ -6,20 +6,26 @@ public class TDBox : MonoBehaviour {
 	public Texture targetbox;
 	public GameObject TargetObject;
 	public Vector3 screenPos;
+    public Vector3 offset;
 	public Camera MainCam;
 
 	void Start(){
         TargetObject = GameObject.FindGameObjectWithTag("SelectedTarget");
     }
 	void OnGUI(){
-		applyBox();
+        if(TargetObject != null)
+			applyBox();
 	}
 		
 	public void applyBox(){
-
+        Vector3 screenPoint = MainCam.WorldToViewportPoint(TargetObject.transform.position);
+        bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
 		if (TargetObject != null) {
-			GUI.DrawTexture(new Rect(screenPos.x, Screen.height - screenPos.y, 50, 50), targetbox, ScaleMode.ScaleToFit, true, 0);
-			screenPos = MainCam.WorldToScreenPoint (TargetObject.transform.position);
+            if (onScreen){
+                screenPos = MainCam.WorldToScreenPoint (TargetObject.transform.position);
+                GUI.DrawTexture(new Rect(screenPos.x - 25, Screen.height - screenPos.y - 25, 50, 50), targetbox, ScaleMode.ScaleToFit, true, 0);
+
+            }
 		}
 	}
 }

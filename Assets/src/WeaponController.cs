@@ -7,6 +7,7 @@ public class WeaponController : MonoBehaviour {
 	public GameObject gun;
 	public GameObject parentplane;
     public int currentWeapon = 0;
+    public int currentWeaponAmmo = 0;
     public ProjGuidance currentGuidance;
     private int nrweapon;
     public HUDHandling HUD;
@@ -37,34 +38,35 @@ public class WeaponController : MonoBehaviour {
         hardpoint5pos = gameObject.transform.Find("hardpointslot5").gameObject;
         hardpoint6pos = gameObject.transform.Find("hardpointslot6").gameObject;
 
-        for(int i = 0; i < Payloads.Length; i++)
-        {
-            Payloads[0] = Instantiate(Payloads[0], hardpoint1pos.transform.position,hardpoint1pos.transform.rotation);
+        //instantiate loadout
+
+            Payloads[0] = Instantiate(Payloads[0], hardpoint1pos.transform.position,Quaternion.identity);
             Payloads[0].transform.parent = hardpoint1pos.transform;
             Payloads[0].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[0].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
-            Payloads[1] = Instantiate(Payloads[1], hardpoint2pos.transform.position,hardpoint1pos.transform.rotation);
+            Payloads[1] = Instantiate(Payloads[1], hardpoint2pos.transform.position,Quaternion.identity);
             Payloads[1].transform.parent = hardpoint2pos.transform;
             Payloads[1].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[1].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
-            Payloads[2] = Instantiate(Payloads[2], hardpoint3pos.transform.position,hardpoint1pos.transform.rotation);
+            Payloads[2] = Instantiate(Payloads[2], hardpoint3pos.transform.position,Quaternion.identity);
             Payloads[2].transform.parent = hardpoint3pos.transform;
             Payloads[2].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[2].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
-            Payloads[3] = Instantiate(Payloads[3], hardpoint4pos.transform.position,hardpoint1pos.transform.rotation);
+            Payloads[3] = Instantiate(Payloads[3], hardpoint4pos.transform.position,Quaternion.identity);
             Payloads[3].transform.parent = hardpoint4pos.transform;
             Payloads[3].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[3].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
-            Payloads[4] = Instantiate(Payloads[4], hardpoint5pos.transform.position,hardpoint1pos.transform.rotation);
+            Payloads[4] = Instantiate(Payloads[4], hardpoint5pos.transform.position,Quaternion.identity);
             Payloads[4].transform.parent = hardpoint5pos.transform;
             Payloads[4].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[4].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
-            Payloads[5] = Instantiate(Payloads[5], hardpoint6pos.transform.position,hardpoint1pos.transform.rotation);
+            Payloads[5] = Instantiate(Payloads[5], hardpoint6pos.transform.position,Quaternion.identity);
             Payloads[5].transform.parent = hardpoint6pos.transform;
             Payloads[5].GetComponent<Rigidbody>().velocity = parentplane.transform.GetComponent<Rigidbody>().velocity;
             Payloads[5].GetComponent<Rigidbody>().angularVelocity = parentplane.transform.GetComponent<Rigidbody>().angularVelocity;
             //Debug.Log("Creating enemy number: " + i);
-
+        for(int i = 0; i < Payloads.Length; i++)
+        {
             if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM){
                 IRMAmmo++;
             }
@@ -85,28 +87,26 @@ public class WeaponController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown ("1")) {
-            /*for(int i=0;i<Payloads.Length;i++){
-                currentGuidance = Payloads[i].GetComponent<ProjGuidance>();
-                if(currentGuidance.guidanceType == ProjGuidance.GuidanceTypes.Infrared){
-                    Payloads[i].gameObject.SetActive(true);
-                }
-            }*/
-			//SwitchWeapon(0);
+		if (Input.GetKeyDown (KeyCode.Alpha1)) {
 			currentWeapon = 0;
+            //currentWeaponAmmo = IRMAmmo;
             HUD.HUDMode = 0;
-		} else if (Input.GetKeyDown ("2")) {
+		} else if (Input.GetKeyDown (KeyCode.Alpha2)) {
 			//SwitchWeapon(1);
 			currentWeapon = 1;
+            //currentWeaponAmmo = SAHMAmmo;
             HUD.HUDMode = 1;
-		} else if (Input.GetKeyDown ("3")) {
+		} else if (Input.GetKeyDown (KeyCode.Alpha3)) {
 			currentWeapon = 2;
+            //currentWeaponAmmo = ARMAmmo;
             HUD.HUDMode = 2;
-		} else if (Input.GetKeyDown ("4")) {
+		} else if (Input.GetKeyDown (KeyCode.Alpha4)) {
 			currentWeapon = 3;
+            //currentWeaponAmmo = AGMAmmo;
             HUD.HUDMode = 3;
-		} else if (Input.GetKeyDown ("5")) {
+		} else if (Input.GetKeyDown (KeyCode.Alpha5)) {
 			currentWeapon = 4;
+            //currentWeaponAmmo = BombAmmo;
             HUD.HUDMode = 4;
 		} else if (Input.GetKeyDown (KeyCode.C)) {
             //currentWeapon = 5;
@@ -127,15 +127,68 @@ public class WeaponController : MonoBehaviour {
         }
 	}
 
-/*    public void updateAmmoCounter(string ammo){
-        AmmoCounter.text = ammo;
-    }*/
 
+    public void Launch(Projectile wpn){
+        wpn.GetComponent<Rigidbody>().isKinematic = false;
+        wpn.transform.parent = null;
+        wpn.BoostFuel--;
+        if(wpn.projType != Projectile.ProjTypes.Bomb){
+            wpn.transform.LookAt(wpn.lockedtarget.transform);
+            if (wpn.BoostFuel > 0) {
+//this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                Vector3 forwardforce = (wpn.transform.forward*wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+                wpn.transform.Find("missiletrail").gameObject.SetActive(true);
+
+
+                if(wpn.GetComponent<ProjGuidance>().target != null)
+                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);
+                else
+                    wpn.GetComponent<Rigidbody>().velocity = forwardforce;
+            } else{
+                wpn.ProjSpeed = 0.0f;
+                wpn.transform.Find("missiletrail").gameObject.GetComponent<TrailRenderer>().enabled = false;
+//this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+//stop emitting flame & smoke particle
+            }
+
+        }
+        else if(wpn.projType == Projectile.ProjTypes.AGM){
+            if (wpn.BoostFuel>0) {
+                Vector3 forwardforce = (wpn.transform.forward*wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+                //wpn.ProjSpeed = 400.0f;
+                wpn.GetComponent<Rigidbody>().velocity = forwardforce;
+                wpn.transform.Find("missiletrail").gameObject.SetActive(true);
+
+
+
+//GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
+            } else{
+                wpn.ProjSpeed = 0.0f;
+                wpn.transform.Find("missiletrail").gameObject.SetActive(false);
+//stop emitting flame & smoke particle
+            }
+
+        }
+        else if(wpn.projType == Projectile.ProjTypes.Bomb){
+//gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
+
+            wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+        }
+        else if(wpn.projType == Projectile.ProjTypes.Gun){
+        }
+    }
    public void Fire(int wpn){
+       //if(currentWeaponAmmo > 0){
+           //Payloads[wpn].GetComponent<Projectile>().SetFire();
+           //Payloads[wpn].GetComponent<Rigidbody>().isKinematic = false;
+           //Payloads[wpn].GetComponent<Rigidbody>().velocity = 300.0f *transform.forward;
+           Launch(Payloads[wpn].GetComponent<Projectile>());
+       //}
 		//Instantiate(Payloads[wpn], Payloads[wpn].transform.position,Payloads[wpn].transform.rotation);
-		Payloads[wpn].GetComponent<Projectile>().SetFire();
-       Payloads[wpn].GetComponent<Rigidbody>().isKinematic = false;
-       Payloads[wpn].transform.parent = null;
+
+
+       //Payloads[wpn].transform.parent = null;
+       //Physics.IgnoreCollision(Payloads[wpn].GetComponent<Collider>(), transform.parent.GetComponent<Collider>());
 
        if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM) &&(IRMAmmo > 0)){
            IRMAmmo--;
@@ -159,6 +212,10 @@ public class WeaponController : MonoBehaviour {
        }
  	}
 
+/*
+    int CheckAmmo(){
+    }*/
+
 	/*void Fire(){
     // Create the Bullet from the Bullet Prefab
     var bullet = (GameObject)Instantiate (
@@ -180,7 +237,7 @@ public class WeaponController : MonoBehaviour {
 			// Add velocity to the bullet
 			bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 1500.0f;
 			// Destroy the bullet after 2 seconds
-			Destroy (bullet, 3.0f);
+			Destroy (bullet, 2.0f);
 			gunammo--;
 		} else {
 			Debug.Log ("Gun Winchester!");

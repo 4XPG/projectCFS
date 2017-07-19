@@ -5,6 +5,7 @@ public class ProjGuidance : MonoBehaviour {
 
 	public Projectile proj;
 	public GameObject target;
+    public GameObject player;
 	public Transform lockedTarget;
 	private Quaternion targetRotation;
 
@@ -170,6 +171,52 @@ public class ProjGuidance : MonoBehaviour {
 
 // Finally, add the tangential and orthogonal velocities.
             return shotVelOrth + shotVelTang;
+        }
+    }
+
+    void CalculateAngleToHitTarget(out float? theta1, out float? theta2)
+    {
+//Initial speed
+        float v = proj.ProjSpeed;
+
+        Vector3 targetVec = target.transform.position - player.transform.position;
+
+//Vertical distance
+        float y = targetVec.y;
+
+//Reset y so we can get the horizontal distance x
+        targetVec.y = 0f;
+
+//Horizontal distance
+        float x = targetVec.magnitude;
+
+//Gravity
+        float g = 9.81f;
+
+
+//Calculate the angles
+
+        float vSqr = v * v;
+
+        float underTheRoot = (vSqr * vSqr) - g * (g * x * x + 2 * y * vSqr);
+
+//Check if we are within range
+        if (underTheRoot >= 0f)
+        {
+            float rightSide = Mathf.Sqrt(underTheRoot);
+
+            float top1 = vSqr + rightSide;
+            float top2 = vSqr - rightSide;
+
+            float bottom = g * x;
+
+            theta1 = Mathf.Atan2(top1, bottom) * Mathf.Rad2Deg;
+            theta2 = Mathf.Atan2(top2, bottom) * Mathf.Rad2Deg;
+        }
+        else
+        {
+            theta1 = null;
+            theta2 = null;
         }
     }
 
