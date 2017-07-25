@@ -65,7 +65,9 @@ public class HUDHandling : MonoBehaviour {
     public RectTransform LinePointer;
     public RectTransform CCIPSight;
     public RectTransform LCOSSight;
-
+	public Image TDBoxImage;
+    public Sprite NormalTDBoxImage;
+    public Sprite MRMTDBoxImage;
 	//public RectTransform bankind;
 
 	public RectTransform fpm;
@@ -211,6 +213,7 @@ public class HUDHandling : MonoBehaviour {
 			modetext.text = "MRM";
             AmmoCounter.text = wp.SAHMAmmo.ToString();
             ASECircle.gameObject.SetActive(true);
+
 		} else if (HUDMode == 2) { // SAR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FCR : MonoBehaviour {
     public enum RadarModes {Air,Ground};
     public RadarModes RadarMode = RadarModes.Air;
+    public RectTransform map;
 	public Camera FCRCamera;
 	public GameObject playerObject;
     public GameObject trackedObject;
@@ -13,10 +14,10 @@ public class FCR : MonoBehaviour {
 	public GameObject[] airObjects;
 	public GameObject[] groundObjects;
 	public Transform[] groundpositions;
-	public Image FCRCursor;
+	public RectTransform FCRCursor;
     public Image RadarMask;
-	public Sprite AirCursor;
-    public Sprite GroundCursor;
+	public RectTransform AirCursor;
+    public RectTransform GroundCursor;
     public Sprite AirOverlay;
     public Sprite GroundOverlay;
 	private Vector3 CameraPos;
@@ -31,8 +32,9 @@ public class FCR : MonoBehaviour {
 
     public GameObject radar;
 
-    public RectTransform map;
-    public List<Bogey> mapEnemies;
+    private float MapWidth;
+    private float MapHeight;
+    public List<RadarContact> mapEnemies;
     public GameObject[] airTargets;
     public GameObject[] groundTargets;
     public List<GameObject> enemies;
@@ -42,7 +44,12 @@ public class FCR : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
+
+        MapWidth = map.rect.width;
+        MapHeight = map.rect.height;
+        //FCRCursor = AirCursor;
         StartCoroutine (UpdateMapPos());
+        PopulateRadarScreen();
         airTargets = GameObject.FindGameObjectsWithTag("Air");
         groundTargets = GameObject.FindGameObjectsWithTag("Ground");
             if(RadarMode == RadarModes.Air){
@@ -59,6 +66,7 @@ public class FCR : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        radarCursorControl(FCRCursor);
         radarZoomControl();
         changeRadarMode();
         if(RadarMode == RadarModes.Air){
@@ -85,9 +93,28 @@ public class FCR : MonoBehaviour {
         radarZoomText.text = (RadarzoomLevelSelected).ToString();
     }
 
-    private void radarZoomIn(){
+    void radarCursorControl(RectTransform radarCursor){
+        Vector3 CursorPos = radarCursor.anchoredPosition;
 
+        if (Input.GetKey ("'") && (CursorPos.y <= 76.0f)) {
+            CursorPos.y++;
+            Debug.Log(CursorPos);
+        }
+        if (Input.GetKey (",") && (CursorPos.x >= -76.0f)) {
+            CursorPos.x--;
+            Debug.Log(CursorPos);
+        }
+        if (Input.GetKey (".") && (CursorPos.y >= -76.0f)) {
+            CursorPos.y--;
+            Debug.Log(CursorPos);
+        }
+        if (Input.GetKey ("/")&& (CursorPos.x <= 76.0f)) {
+            CursorPos.x++;
+            Debug.Log(CursorPos);
+        }
+        radarCursor.anchoredPosition = CursorPos;
     }
+
     void radarZoomControl(){
         if (Input.GetKeyDown(name:"t") ){
             zoomchange += 1;
@@ -103,7 +130,10 @@ public class FCR : MonoBehaviour {
         if(RadarMode == RadarModes.Air){
             if (Input.GetKeyDown(KeyCode.R) ){
                 RadarMode = RadarModes.Ground;
-                FCRCursor.gameObject.GetComponent<Image>().overrideSprite = GroundCursor;
+                //FCRCursor.gameObject.GetComponent<Image>().overrideSprite = GroundCursor;
+                AirCursor.gameObject.SetActive(false);
+                GroundCursor.gameObject.SetActive(true);
+                FCRCursor = GroundCursor;
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = GroundOverlay;
                 Debug.Log(RadarMode);
             }
@@ -111,7 +141,10 @@ public class FCR : MonoBehaviour {
         else if(RadarMode == RadarModes.Ground){
             if (Input.GetKeyDown(KeyCode.R) ){
                 RadarMode = RadarModes.Air;
-                FCRCursor.gameObject.GetComponent<Image>().overrideSprite = AirCursor;
+                AirCursor.gameObject.SetActive(true);
+                GroundCursor.gameObject.SetActive(false);
+                FCRCursor = AirCursor;
+                //FCRCursor.gameObject.GetComponent<Image>().overrideSprite = AirCursor;
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = AirOverlay;
                 Debug.Log(RadarMode);
                 trackedObject = AGMTargetPos;
@@ -163,6 +196,10 @@ public class FCR : MonoBehaviour {
     }
 
     void PopulateRadarScreen(){
+
+        if(map.GetComponentInParent<Canvas>() != null){
+
+        }
             for(int i=0;i<airTargets.Length;i++) {
                 Instantiate(bogeyIcon, airTargets[i].transform.position, transform.rotation);
             }
@@ -179,7 +216,7 @@ public class FCR : MonoBehaviour {
             }else{
                 collider.tag = "SelectedTarget";
                 Debug.Log(collider.tag);
-                Bogey tempEnemy = Instantiate(mapEnemies[0].gameObject).GetComponent<Bogey>();
+                RadarContact tempEnemy = Instantiate(mapEnemies[0].gameObject).GetComponent<RadarContact>();
                 mapEnemies.Add(tempEnemy);
                 enemies.Add(collider.gameObject);
                 tempEnemy.rTransform.SetParent(map);
@@ -198,7 +235,7 @@ public class FCR : MonoBehaviour {
 //BoxCollider colliders = collider.GetComponent<BoxCollider>();
             if(enemies.Contains(collider.gameObject)){
                 Debug.Log("ReleaseEnemy");
-                Bogey tempRemoval = mapEnemies[enemies.IndexOf(collider.gameObject)+1];
+                RadarContact tempRemoval = mapEnemies[enemies.IndexOf(collider.gameObject)+1];
                 mapEnemies.Remove(tempRemoval);
                 Destroy(tempRemoval.gameObject);
                 collider.tag = RadarMode.ToString();

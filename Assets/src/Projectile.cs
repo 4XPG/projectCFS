@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 
-[RequireComponent(typeof (ProjectilePhysics))]
 public class Projectile : MonoBehaviour {
 
  	public enum ProjTypes : int {Gun,IRM,SAHM,ARM,AGM,Bomb};
@@ -79,13 +78,6 @@ public class Projectile : MonoBehaviour {
     }
 
 
-    public void CheckTargetAspect(){
-
-    }
-
-    public void SetFire(){
-        Fire = true;
-    }
 	void OnCollisionEnter(){
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy(gameObject); // destroy the grenade

@@ -6,6 +6,8 @@ public class WeaponController : MonoBehaviour {
 	public GameObject[] Payloads;
 	public GameObject gun;
 	public GameObject parentplane;
+    public float gunFireRate = 0.07f;
+    private float nextFire = 0.0f;
     public int currentWeapon = 0;
     public int currentWeaponAmmo = 0;
     public ProjGuidance currentGuidance;
@@ -158,7 +160,8 @@ public class WeaponController : MonoBehaviour {
                 //wpn.ProjSpeed = 400.0f;
                 wpn.GetComponent<Rigidbody>().velocity = forwardforce;
                 wpn.transform.Find("missiletrail").gameObject.SetActive(true);
-
+                //wpn.lockedtarget =
+                //wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);
 
 
 //GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
@@ -172,7 +175,7 @@ public class WeaponController : MonoBehaviour {
         else if(wpn.projType == Projectile.ProjTypes.Bomb){
 //gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
 
-            wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+            wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity * 1.5f;
         }
         else if(wpn.projType == Projectile.ProjTypes.Gun){
         }
@@ -191,24 +194,44 @@ public class WeaponController : MonoBehaviour {
        //Physics.IgnoreCollision(Payloads[wpn].GetComponent<Collider>(), transform.parent.GetComponent<Collider>());
 
        if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM) &&(IRMAmmo > 0)){
-           IRMAmmo--;
+           IRMAmmo = IRMAmmo - 1;
            Debug.Log ("Fox Two");
+           for(int i=0;i<Payloads.Length;i++){
+               if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM)
+                   Payloads[wpn] = Payloads[i];
+           }
        }
        else if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.SAHM) &&(SAHMAmmo > 0)) {
            SAHMAmmo--;
            Debug.Log ("Fox One");
+           for(int i=0;i<Payloads.Length;i++){
+               if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.SAHM)
+                   Payloads[wpn] = Payloads[i];
+           }
        }
        else if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.ARM) &&(ARMAmmo > 0)) {
            ARMAmmo--;
            Debug.Log ("Fox Three");
+           for(int i=0;i<Payloads.Length;i++){
+               if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.ARM)
+                   Payloads[wpn] = Payloads[i];
+           }
        }
        else if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.AGM) &&(AGMAmmo > 0)) {
            AGMAmmo--;
            Debug.Log ("Rifle");
+           for(int i=0;i<Payloads.Length;i++){
+               if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.AGM)
+                   Payloads[wpn] = Payloads[i];
+           }
        }
        else if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.Bomb) &&(BombAmmo > 0)) {
            BombAmmo--;
            Debug.Log ("Pickle");
+           for(int i=0;i<Payloads.Length;i++){
+               if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.Bomb)
+                   Payloads[wpn] = Payloads[i];
+           }
        }
  	}
 
@@ -232,16 +255,19 @@ public class WeaponController : MonoBehaviour {
 
 	void FireGun(){
 		// Create the Bullet from the Bullet Prefab
-		if (gunammo > 0) {
-			var bullet = (GameObject)Instantiate (gun, gunpos.position, gunpos.rotation);
-			// Add velocity to the bullet
-			bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 1500.0f;
-			// Destroy the bullet after 2 seconds
-			Destroy (bullet, 2.0f);
-			gunammo--;
-		} else {
-			Debug.Log ("Gun Winchester!");
-		}
+        if(Time.time > nextFire){
+            if (gunammo > 0) {
+                nextFire = Time.time + gunFireRate;
+                var bullet = (GameObject)Instantiate (gun, gunpos.position, gunpos.rotation);
+// Add velocity to the bullet
+                bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 1500.0f;
+// Destroy the bullet after 2 seconds
+                Destroy (bullet, 2.0f);
+                gunammo--;
+            } else {
+                Debug.Log ("Gun Winchester!");
+            }
+        }
 	}
     /*void OnCollisionEnter (Collision col)
     {

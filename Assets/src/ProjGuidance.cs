@@ -7,6 +7,7 @@ public class ProjGuidance : MonoBehaviour {
 	public GameObject target;
     public GameObject player;
 	public Transform lockedTarget;
+    public GameObject lockedGroundTarget;
 	private Quaternion targetRotation;
 
 	public float seekerFOV = 15.0f;
@@ -33,6 +34,7 @@ public class ProjGuidance : MonoBehaviour {
 
 	void Start() {
 			target = GameObject.FindGameObjectWithTag("SelectedTarget");
+            lockedGroundTarget = GameObject.FindGameObjectWithTag("Ground");
 
 			proj = gameObject.GetComponent<Projectile>();
 		if (target != null) {
@@ -223,4 +225,10 @@ public class ProjGuidance : MonoBehaviour {
 	public void TrackDot(GameObject TargetPos){ //track raycasted point made by the EO targetting pod
         gameObject.transform.LookAt(TargetPos.transform);
 	}
+
+
+    public void CheckTargetAspect(){
+
+    }
+
 }
