@@ -1,19 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-[AddComponentMenu("MiniMap/Map canvas controller")]
+[AddComponentMenu("MiniMap/RWR controller")]
 [RequireComponent(typeof(RectTransform))]
-public class RadarDisplay : MonoBehaviour {
+public class RWRDisplay : MonoBehaviour {
 
-    public static RadarDisplay Instance
+    public static RWRDisplay Instance
     {
         get
         {
             if (!_instance)
             {
-                RadarDisplay[] controllers = GameObject.FindObjectsOfType<RadarDisplay>();
+                RWRDisplay[] controllers = GameObject.FindObjectsOfType<RWRDisplay>();
 
                 if (controllers.Length != 0)
                 {
@@ -23,7 +22,7 @@ public class RadarDisplay : MonoBehaviour {
                     }
                     else
                     {
-                        Debug.LogError("You have more than one RadarDisplay in the scene.");
+                        Debug.LogError("You have more than one RWRDisplay in the scene.");
                     }
                 }
                 else
@@ -39,24 +38,18 @@ public class RadarDisplay : MonoBehaviour {
         }
     }
 
-    private static RadarDisplay _instance;
+    private static RWRDisplay _instance;
     private float MapWidth;
     private float MapHeight;
     public Transform playerTransform;
     public float radarDistance = 10;
     public float maxRadarDistance = 10;
 
-    public Text zoomText;
     public bool rotateMap = false;
     public float scale = 1.0f;
-
-    public int RadarzoomLevelSelected = 1;
-    public float[] RadarZoomLevels = new float[] { 10f, 20f, 40f, 80f }; //10, 20, 40, 80
-    private int Radarzoomchange = 1;  //<<<<<<<<<<<<<
     public float minimalOpacity = 0.3f;
-    public FCR radar;
 
-    public BogeyList BogeyList
+    public BogeyList ThreatList
     {
         get
         {
@@ -67,8 +60,8 @@ public class RadarDisplay : MonoBehaviour {
     private RectTransform mapRect;
     private BogeyList markerGroup;
 
-    private Bogey markerAir;
-    private Bogey markerGround;
+    private Bogey threatAir;
+    private Bogey threatGround;
 
     void Awake()
     {
@@ -92,23 +85,10 @@ public class RadarDisplay : MonoBehaviour {
         {
             return;
         }
-        RadarZoomControl();
-        zoomText.text = RadarZoomLevels[RadarzoomLevelSelected].ToString();
-        mapRect.rotation = Quaternion.Euler(new Vector3(0, 0, playerTransform.eulerAngles.y));
+        //mapRect.rotation = Quaternion.Euler(new Vector3(0, 0, playerTransform.eulerAngles.y));
     }
 
-    public void RadarZoomControl(){
-        if (Input.GetKeyDown(KeyCode.T) ){
-            Radarzoomchange += 1;
-        }
-        else if (Input.GetKeyDown(KeyCode.Y) ){
-            Radarzoomchange -= 1;
-        }
 
-        RadarzoomLevelSelected = Mathf.Clamp(Radarzoomchange, 0, RadarZoomLevels.Length-1);
-        //Debug.Log("Zoom Level:" + RadarZoomLevels[RadarzoomLevelSelected]);
-        //FCRCamera.fieldOfView = RadarZoomLevels[RadarzoomLevelSelected];
-    }
 
 
     public void checkIn(Bogey marker)
@@ -117,12 +97,8 @@ public class RadarDisplay : MonoBehaviour {
         {
             return;
         }
-
-        //float scaledRadarDistance = radarDistance * scale;
-        //float scaledMaxRadarDistance = maxRadarDistance * scale;
-
-        float scaledRadarDistance = radarDistance * RadarZoomLevels[RadarzoomLevelSelected];
-        float scaledMaxRadarDistance = maxRadarDistance * RadarZoomLevels[RadarzoomLevelSelected];
+        float scaledRadarDistance = radarDistance * scale;
+        float scaledMaxRadarDistance = maxRadarDistance * scale;
 
         if (marker.isActive)
         {
@@ -131,19 +107,16 @@ public class RadarDisplay : MonoBehaviour {
 
             if (distance > scaledRadarDistance)
             {
-                    if (marker.isVisible())
-                    {
-                        marker.hide();
-                    }
-                    return;
+                if (marker.isVisible())
+                {
+                    marker.hide();
+                }
+                return;
             }
 
             if (!marker.isVisible())
             {
                 marker.show();
-            }
-            if((radar.RadarMode == FCR.RadarModes.Air) && (marker.tag == "Air")){
-                marker.hide();
             }
             else{
 
@@ -152,12 +125,12 @@ public class RadarDisplay : MonoBehaviour {
             Vector3 newPos = new Vector3(posDif.x, posDif.z, 0);
             newPos.Normalize();
 
-            //float markerRadius = (marker.markerSize / 2);
+//float markerRadius = (marker.markerSize / 2);
             float newLen = (distance / scaledRadarDistance) * (MapHeight - marker.blipHeight) * (MapWidth - marker.blipWidth);
 
             newPos *= newLen;
             marker.setLocalPos(newPos);
-            //marker.setOpacity(opacity);
+//marker.setOpacity(opacity);
         }
         else
         {

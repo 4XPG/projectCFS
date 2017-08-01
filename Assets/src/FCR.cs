@@ -23,10 +23,6 @@ public class FCR : MonoBehaviour {
 	private Vector3 CameraPos;
 
 
-    public Text radarZoomText;
-    private int RadarzoomLevelSelected = 1;
-    private float[] RadarZoomLevels = new float[] { 10, 20, 40, 80, 160 };
-    private int zoomchange = 0;  //<<<<<<<<<<<<<
 	private Vector3 offset;
 	private int cullmask;
 
@@ -48,7 +44,7 @@ public class FCR : MonoBehaviour {
         MapWidth = map.rect.width;
         MapHeight = map.rect.height;
         //FCRCursor = AirCursor;
-        StartCoroutine (UpdateMapPos());
+        //StartCoroutine (UpdateMapPos());
         PopulateRadarScreen();
         airTargets = GameObject.FindGameObjectsWithTag("Air");
         groundTargets = GameObject.FindGameObjectsWithTag("Ground");
@@ -67,7 +63,7 @@ public class FCR : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         radarCursorControl(FCRCursor);
-        radarZoomControl();
+        //radarZoomControl();
         changeRadarMode();
         if(RadarMode == RadarModes.Air){
             trackedObject = SelectTarget(airTargets);
@@ -89,9 +85,6 @@ public class FCR : MonoBehaviour {
 		//set so that radar icons only moves in z axis 
 	}
 
-    void onGUI(){
-        radarZoomText.text = (RadarzoomLevelSelected).ToString();
-    }
 
     void radarCursorControl(RectTransform radarCursor){
         Vector3 CursorPos = radarCursor.anchoredPosition;
@@ -114,6 +107,7 @@ public class FCR : MonoBehaviour {
         }
         radarCursor.anchoredPosition = CursorPos;
     }
+/*
 
     void radarZoomControl(){
         if (Input.GetKeyDown(name:"t") ){
@@ -125,6 +119,7 @@ public class FCR : MonoBehaviour {
         RadarzoomLevelSelected = Mathf.Clamp(RadarzoomLevelSelected + zoomchange, 0, RadarZoomLevels.Length -1);
         FCRCamera.fieldOfView = RadarZoomLevels[RadarzoomLevelSelected];
     }
+*/
 
 	public void changeRadarMode(){
         if(RadarMode == RadarModes.Air){
@@ -195,6 +190,18 @@ public class FCR : MonoBehaviour {
         return bestTarget;
     }
 
+    public float GetClosestDistance (GameObject enemy) {
+        float closestDistanceSqr = Mathf.Infinity;
+        Vector3 currentPosition = transform.position;
+        Vector3 directionToTarget = enemy.transform.position - currentPosition;
+        float dSqrToTarget = directionToTarget.sqrMagnitude;
+        if (dSqrToTarget < closestDistanceSqr)
+        {
+            closestDistanceSqr = dSqrToTarget;
+        }
+        return closestDistanceSqr;
+    }
+
     void PopulateRadarScreen(){
 
         if(map.GetComponentInParent<Canvas>() != null){
@@ -207,7 +214,7 @@ public class FCR : MonoBehaviour {
                 Instantiate(groundIcon, groundTargets[j].transform.position, transform.rotation);
             }
     }
-
+/*
     void OnTriggerEnter(Collider collider){
         Debug.Log("Collide");
         if(collider.tag == RadarMode.ToString()){
@@ -257,6 +264,6 @@ public class FCR : MonoBehaviour {
             yield return new WaitForSeconds(0.2f);
         }
         yield return 0;
-    }
+    }*/
 
 }

@@ -9,6 +9,6 @@ public class RadarContact : MonoBehaviour {
 
         public void UpdatePos(float x, float y){
             rTransform.localPosition = new Vector3(x*5,y*5,0);
-        }
+}
 
 }

@@ -9,7 +9,7 @@ public class Projectile : MonoBehaviour {
 	public float ProjSpeed = 0.0f;
 	public float BoostFuel = 300.0f; // how long the rocket motor lives
 	public float turnRate = 0.8f;
-	public float proxymityrange = 0.1f;
+	public float optimumRange = 1000.0f;
 	public bool Fire = false;
 
 	//private ParticleSystem SmokePrefab;
@@ -34,6 +34,7 @@ public class Projectile : MonoBehaviour {
 
 	void Start () {
         //ProjSpeed = 0.0f;
+        gameObject.GetComponent<BoxCollider>().enabled = false;
         parentcraftvel = parentcraft.GetComponent<Rigidbody>().velocity.normalized;
         guidance = gameObject.GetComponent<ProjGuidance>();
         lockedtarget = GameObject.FindGameObjectWithTag("SelectedTarget");
@@ -78,9 +79,14 @@ public class Projectile : MonoBehaviour {
     }
 
 
-	void OnCollisionEnter(){
+
+
+	void OnTriggerEnter(Collider col){
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy(gameObject); // destroy the grenade
+        if(col.gameObject.tag == "Air" || col.gameObject.tag == "Ground")
+        	Destroy(col.gameObject);
+        //Destroy(col.gameObject);
 		//Destroy(expl, 3); // delete the explosion after 3 seconds
 	}
 
