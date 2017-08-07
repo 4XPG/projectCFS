@@ -210,8 +210,9 @@ public class HUDHandling : MonoBehaviour {
             DLZCaret.gameObject.SetActive(true);
             float DLZMaxpos = DLZCaret.localPosition.y;
             float MslMaxRange = 50000.0f;
+            float DLZScaling = 2.0f;
             ClosureRate = (playerObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f) + (targetObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f);
-            DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * 1.0f), 0);
+            DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * DLZScaling), 0);
 
             if(targetrng > 1)
 				targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f; // to nautical miles
