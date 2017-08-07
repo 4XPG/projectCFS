@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 
 public class WeaponController : MonoBehaviour {
 	public GameObject[] Payloads;
@@ -15,6 +13,7 @@ public class WeaponController : MonoBehaviour {
     public HUDHandling HUD;
 	private string weaponHUD = "SRM"; // default mode
 	public Transform gunpos;
+    public FCR radar;
 
 	private int maxgunammo = 512;
 	public int IRMAmmo = 0;
@@ -127,6 +126,7 @@ public class WeaponController : MonoBehaviour {
     {
     		FireGun();
         }
+
 	}
 
 
@@ -136,7 +136,6 @@ public class WeaponController : MonoBehaviour {
         wpn.GetComponent<BoxCollider>().enabled = true;
         wpn.BoostFuel--;
         if(wpn.projType == Projectile.ProjTypes.IRM || wpn.projType == Projectile.ProjTypes.ARM || wpn.projType == Projectile.ProjTypes.SAHM){ // AAMs
-            wpn.transform.LookAt(wpn.lockedtarget.transform);
             if (wpn.BoostFuel > 0) {
 //this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
                 wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
@@ -144,12 +143,17 @@ public class WeaponController : MonoBehaviour {
                 wpn.transform.Find("missiletrail").gameObject.SetActive(true);
 
 
-                if(wpn.GetComponent<ProjGuidance>().target != null){
+                if(wpn.GetComponent<ProjGuidance>().target != null && radar.RadarMode == FCR.RadarModes.Air){
+                    GameObject lockedtarget = wpn.GetComponent<ProjGuidance>().target;
+                    //Debug.Log("launch");
                     wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);}
+                    wpn.transform.LookAt(lockedtarget.transform);
+                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);}
                 else{
-                wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.GetComponent<Rigidbody>().velocity = forwardforce;}
+                    //Debug.Log("trashed");
+                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
+                    wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity + (Vector3.forward * wpn.ProjSpeed);
+                }
             } else{
                 wpn.ProjSpeed = 0.0f;
                 wpn.transform.Find("missiletrail").gameObject.GetComponent<TrailRenderer>().enabled = false;
@@ -160,14 +164,19 @@ public class WeaponController : MonoBehaviour {
         }
         else if(wpn.projType == Projectile.ProjTypes.AGM){
             if (wpn.BoostFuel>0) {
-                Vector3 forwardforce = (wpn.transform.forward*wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
-                //wpn.ProjSpeed = 400.0f;
-                wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                wpn.GetComponent<Rigidbody>().velocity = forwardforce;
-                wpn.transform.Find("missiletrail").gameObject.SetActive(true);
-                //wpn.lockedtarget =
-                //wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);
-
+                if(wpn.GetComponent<ProjGuidance>().target != null && radar.RadarMode == FCR.RadarModes.Ground){
+                    GameObject lockedtarget = wpn.GetComponent<ProjGuidance>().target;
+                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
+                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);}
+                else {
+                    Vector3 forwardforce = (wpn.transform.forward * wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+//wpn.ProjSpeed = 400.0f;
+                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
+                    wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity + (Vector3.forward * wpn.ProjSpeed);
+                    wpn.transform.Find("missiletrail").gameObject.SetActive(true);
+//wpn.lockedtarget =
+//wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);
+                }
 
 //GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
             } else{

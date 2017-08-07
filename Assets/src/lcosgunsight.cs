@@ -23,27 +23,33 @@ public class lcosgunsight : MonoBehaviour {
 	void Start () {
         target = GameObject.FindGameObjectWithTag("SelectedTarget");
 		shooterPosition = self.transform.position;
-        targetPosition = target.transform.position;
         shooterVelocity = self.GetComponent<Rigidbody>() ? self.GetComponent<Rigidbody>().velocity : Vector3.zero;
-        targetVelocity = target.GetComponent<Rigidbody>() ? target.GetComponent<Rigidbody>().velocity : Vector3.zero;
-        interceptPoint = FirstOrderIntercept(shooterPosition, shooterVelocity, projSpeed, targetPosition, targetVelocity);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if(target!= null){
+            targetPosition = target.transform.position;
+            targetVelocity = target.GetComponent<Rigidbody>() ? target.GetComponent<Rigidbody>().velocity : Vector3.zero;
+            interceptPoint = FirstOrderIntercept(shooterPosition, shooterVelocity, projSpeed, targetPosition, targetVelocity);
+        }
         updateCrosshair();
 	}
 
     public void updateCrosshair(){
+        Vector3 perp = Vector3.Cross(Vector3.forward, self.transform.forward);
+        float pdir = Vector3.Dot(perp, Vector3.up);
+        if (target != null) {
         Vector3 screenPoint = MainCam.WorldToViewportPoint(target.transform.position);
         Vector3 screenPos = MainCam.WorldToScreenPoint (interceptPoint);
         Vector2 screenPos2D = screenPos;
         bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
-        if (target != null) {
             if (onScreen){
                 //Debug.Log("targetpos:"+screenPos2D);
                 gunCrosshair.position = screenPos2D;
             }
+        }else{
+            gunCrosshair.localPosition = gunCrosshair.localPosition + new Vector3((Vector3.Angle(self.transform.forward,Vector3.forward) * Mathf.Sign(pdir)),(Vector3.Angle(self.transform.up,Vector3.up) * Mathf.Sign(pdir)),0) ;
         }
     }
 

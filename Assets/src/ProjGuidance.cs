@@ -29,23 +29,26 @@ public class ProjGuidance : MonoBehaviour {
 	private Vector3 prevpos;
 	private	Vector3 prevtargetpos;
 	private Vector3 currentpos;
+    public bool isFire;
 	private static float NavGain = 3.0f;
 	private static float TargetAccel = 9.8f;
+    public float ETAtoTarget;
 
 	void Start() {
-			target = GameObject.FindGameObjectWithTag("SelectedTarget");
-            lockedGroundTarget = GameObject.FindGameObjectWithTag("Ground");
 
+            lockedGroundTarget = GameObject.FindGameObjectWithTag("Ground");
 			proj = gameObject.GetComponent<Projectile>();
-		if (target != null) {
-			lockedTarget = target.transform;
-			prevtargetpos = lockedTarget.position;
-		}
+
 		prevpos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        target = GameObject.FindGameObjectWithTag("SelectedTarget");
+        if (target != null) {
+            lockedTarget = target.transform;
+            prevtargetpos = lockedTarget.position;
+        }
 		prevpos = currentpos;
 		prevtargetpos = currentpos;
 	}

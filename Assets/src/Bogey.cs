@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +24,8 @@ public class Bogey : MonoBehaviour {
     private Image markerImage;
 
     void Start () {
+        //TargetCursor = GameObject.FindGameObjectWithTag("RadarCursor").GetComponent<RectTransform>();
+
         if (!markerSprite)
         {
             Debug.LogError(" Please, specify the marker sprite.");
@@ -55,17 +55,17 @@ public class Bogey : MonoBehaviour {
         markerImage.rectTransform.localScale = Vector3.one;
         markerImage.rectTransform.sizeDelta = new Vector2(markerSize, markerSize);
         markerImage.gameObject.SetActive(false);
-        ChangeRadarMode();
     }
 
 
     void Update () {
+        TargetCursor = radar.FCRCursor;
+        CheckOverlap(TargetCursor,markerImage);
         RadarDisplay controller = RadarDisplay.Instance;
         if (!controller)
         {
             return;
         }
-        this.ChangeRadarMode();
         RadarDisplay.Instance.checkIn(this);
         markerImage.rectTransform.rotation = Quaternion.Euler(0,0,360-gameObject.transform.rotation.eulerAngles.y);
 
@@ -77,21 +77,6 @@ public class Bogey : MonoBehaviour {
         if (markerImage)
         {
             Destroy(markerImage.gameObject);
-        }
-    }
-
-    void ChangeRadarMode(){
-        if((radar.RadarMode == FCR.RadarModes.Air) && (markerImage.tag == "Ground")){
-            hide();
-        }
-        else if((radar.RadarMode == FCR.RadarModes.Ground) && (markerImage.tag == "Ground")){
-            show();
-        }
-        else if((radar.RadarMode == FCR.RadarModes.Ground) && (markerImage.tag == "Air")){
-            hide();
-        }
-        else if((radar.RadarMode == FCR.RadarModes.Air) && (markerImage.tag == "Air")){
-            show();
         }
     }
 
@@ -126,14 +111,52 @@ public class Bogey : MonoBehaviour {
         markerImage.color = new Color(1.0f, 1.0f, 1.0f, opacity);
     }
 
-    void OnTriggerEnter2D(Collider2D co){
-        if(co.gameObject.tag == "RadarCursor"){
+    bool rectOverlaps(RectTransform rectTrans1, RectTransform rectTrans2)
+    {
+        Rect rect1 = new Rect(rectTrans1.anchoredPosition.x, rectTrans1.anchoredPosition.y, rectTrans1.rect.width, rectTrans1.rect.height);
+        Rect rect2 = new Rect(rectTrans2.anchoredPosition.x, rectTrans2.anchoredPosition.y, rectTrans2.rect.width, rectTrans2.rect.height);
+
+        return rect1.Overlaps(rect2);
+    }
+
+    bool CheckOverlap(RectTransform RadarCursor, Image marker){
+        //Debug.Log("Bandit position:"+markerImage.rectTransform.anchoredPosition);
+        //Debug.Log(RadarCursor.anchoredPosition);
+        if(rectOverlaps(RadarCursor,markerImage.rectTransform)){
+            Debug.Log("Bandit position:"+markerImage.rectTransform.anchoredPosition);
+            Debug.Log(gameObject.transform.position);
+            if (Input.GetKeyDown(KeyCode.Z)) {
+                SelectTarget(gameObject);
+                Debug.Log(gameObject.transform.position);
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
+    void SelectTarget(GameObject target) {
+        Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.transform.position);
+        bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+        //if (onScreen) {
+            target.tag = "SelectedTarget";
             markerImage.sprite = trackedMarkerSprite;
-            Debug.Log("target tracked");
+        //}
+    }
+
+    void DeselectTarget(GameObject target){
+        SetObjectTag(target, "SelectedTarget","Air");
+    }
+
+    void SwapTags(GameObject[] SelectedTargets, string oldtag, string newtag){
+        SelectedTargets = GameObject.FindGameObjectsWithTag("SelectedTarget");
+        if(SelectedTargets.Length > 1){
+            SelectedTargets[SelectedTargets.Length-1].tag = "Air";
         }
     }
 
-    void DeselectTarget(){
-
+    void SetObjectTag(GameObject g, string previousTag, string newTag){
+        if (previousTag == "SelectedTarget")
+            g.tag = newTag;
     }
 }

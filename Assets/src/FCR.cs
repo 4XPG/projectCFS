@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FCR : MonoBehaviour {
     public enum RadarModes {Air,Ground};
-    public RadarModes RadarMode = RadarModes.Air;
+    public RadarModes RadarMode;
     public RectTransform map;
 	public Camera FCRCamera;
 	public GameObject playerObject;
@@ -33,6 +33,7 @@ public class FCR : MonoBehaviour {
     public List<RadarContact> mapEnemies;
     public GameObject[] airTargets;
     public GameObject[] groundTargets;
+    public GameObject selectedTarget;
     public List<GameObject> enemies;
     public GameObject bogeyIcon;
     public GameObject groundIcon;
@@ -48,14 +49,16 @@ public class FCR : MonoBehaviour {
         PopulateRadarScreen();
         airTargets = GameObject.FindGameObjectsWithTag("Air");
         groundTargets = GameObject.FindGameObjectsWithTag("Ground");
-            if(RadarMode == RadarModes.Air){
+        selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
+/*            if(RadarMode == RadarModes.Air){
                 trackedObject = GetClosestEnemy(airTargets);
                 trackedObject.gameObject.tag = "SelectedTarget";
             }
             else if(RadarMode == RadarModes.Ground){
                 trackedObject = GetClosestEnemy(groundTargets);
                 trackedObject.gameObject.tag = "SelectedTarget";
-            }
+            }*/
+        trackedObject = GetClosestEnemy(airTargets);
 		//CameraPos.x = transform.position.x - playerObject.transform.position.x;
 		//CameraPos.z = transform.position.z - playerObject.transform.position.z;
 	}
@@ -66,12 +69,12 @@ public class FCR : MonoBehaviour {
         //radarZoomControl();
         changeRadarMode();
         if(RadarMode == RadarModes.Air){
-            trackedObject = SelectTarget(airTargets);
-            trackedObject.gameObject.tag = "SelectedTarget";
+            //trackedObject = SelectTarget(airTargets);
+            //trackedObject.gameObject.tag = "SelectedTarget";
         }
         else if(RadarMode == RadarModes.Ground){
-            trackedObject = SelectTarget(groundTargets);
-            trackedObject.gameObject.tag = "SelectedTarget";
+            //trackedObject = SelectTarget(groundTargets);
+            //trackedObject.gameObject.tag = "SelectedTarget";
         }
 
         if(playerObject.transform.position!=radar.transform.position){
@@ -89,7 +92,7 @@ public class FCR : MonoBehaviour {
     void radarCursorControl(RectTransform radarCursor){
         Vector3 CursorPos = radarCursor.anchoredPosition;
 
-        if (Input.GetKey ("'") && (CursorPos.y <= 76.0f)) {
+        if (Input.GetKey (";") && (CursorPos.y <= 76.0f)) {
             CursorPos.y++;
             Debug.Log(CursorPos);
         }
@@ -130,6 +133,8 @@ public class FCR : MonoBehaviour {
                 GroundCursor.gameObject.SetActive(true);
                 FCRCursor = GroundCursor;
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = GroundOverlay;
+                if(selectedTarget != null && selectedTarget.tag == "SelectedTarget")
+                    selectedTarget.tag = "Air";
                 Debug.Log(RadarMode);
             }
         }
@@ -143,6 +148,8 @@ public class FCR : MonoBehaviour {
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = AirOverlay;
                 Debug.Log(RadarMode);
                 trackedObject = AGMTargetPos;
+                if(selectedTarget != null && selectedTarget.tag == "SelectedTarget")
+                    selectedTarget.tag = "Ground";
             }
         }
 	}

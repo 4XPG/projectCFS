@@ -143,8 +143,18 @@ public class RadarDisplay : MonoBehaviour {
                 marker.show();
             }
             if((radar.RadarMode == FCR.RadarModes.Air) && (marker.tag == "Air")){
+                marker.show();
+            }
+            else if((radar.RadarMode == FCR.RadarModes.Air) && (marker.tag == "Ground")){
                 marker.hide();
             }
+            else if((radar.RadarMode == FCR.RadarModes.Ground) && (marker.tag == "Ground")){
+                marker.show();
+            }
+            else if((radar.RadarMode == FCR.RadarModes.Ground) && (marker.tag == "Air")){
+                marker.hide();
+            }
+
             else{
 
             }

@@ -9,7 +9,7 @@ public class Projectile : MonoBehaviour {
 	public float ProjSpeed = 0.0f;
 	public float BoostFuel = 300.0f; // how long the rocket motor lives
 	public float turnRate = 0.8f;
-	public float optimumRange = 1000.0f;
+	public float optimumRange = 50000.0f;
 	public bool Fire = false;
 
 	//private ParticleSystem SmokePrefab;
