@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CCIP : MonoBehaviour {
-    public GameObject bomb;
+    public GameObject CCIPHelper;
 	public RectTransform CCIPLine;
 
 	// Use this for initialization
@@ -13,6 +13,7 @@ public class CCIP : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+		Vector3 predictedImpactPoint = CCIPHelper.transform.position;
+
+    }
 }

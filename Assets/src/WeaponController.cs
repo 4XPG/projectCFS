@@ -213,7 +213,7 @@ public class WeaponController : MonoBehaviour {
        //Physics.IgnoreCollision(Payloads[wpn].GetComponent<Collider>(), transform.parent.GetComponent<Collider>());
 
        if((Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM) &&(IRMAmmo > 0)){
-           IRMAmmo = IRMAmmo - 1;
+           IRMAmmo--;
            Debug.Log ("Fox Two");
            for(int i=0;i<Payloads.Length;i++){
                if(Payloads[i].GetComponent<Projectile>().projType == Projectile.ProjTypes.IRM)

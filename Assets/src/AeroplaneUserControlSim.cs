@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityStandardAssets.CrossPlatformInput;
 
     [RequireComponent(typeof (AeroplanePhysics))]
     public class AeroplaneUserControlSim : MonoBehaviour
@@ -23,11 +22,11 @@ using UnityStandardAssets.CrossPlatformInput;
         private void FixedUpdate()
         {
             // Read input for the pitch, yaw, roll and throttle of the aeroplane.
-            float roll = CrossPlatformInputManager.GetAxis("Horizontal");
-            float pitch = CrossPlatformInputManager.GetAxis("Vertical");
-            m_AirBrakes = CrossPlatformInputManager.GetButton("Fire3");
-            m_Yaw = CrossPlatformInputManager.GetAxis("Yaw");
-            m_Throttle = CrossPlatformInputManager.GetAxis("Throttle");
+            float roll = Input.GetAxis("Horizontal");
+            float pitch = Input.GetAxis("Vertical");
+            m_AirBrakes = Input.GetButton("Fire3");
+            m_Yaw = Input.GetAxis("Yaw");
+            m_Throttle = Input.GetAxis("Throttle");
 
             // Pass the input to the aeroplane
             m_Aeroplane.Move(roll, pitch, m_Yaw, m_Throttle, m_AirBrakes);

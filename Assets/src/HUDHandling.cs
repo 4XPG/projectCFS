@@ -204,13 +204,13 @@ public class HUDHandling : MonoBehaviour {
             arrowPointingtoTarget(arrowPointer,targetObject);
 // DLZ Bar
             float distancetotarget = radar.GetClosestDistance(targetObject);
-            selectedweaponmaxrange = selectedwpn.optimumRange;
+            //selectedweaponmaxrange = selectedwpn.optimumRange;
 //Debug.Log(distancetotarget);
 //float DLZDistanceRatio = ;
             DLZCaret.gameObject.SetActive(true);
             float DLZMaxpos = DLZCaret.localPosition.y;
-            float MslMaxRange = 50000.0f;
-            float DLZScaling = 2.0f;
+            float MslMaxRange = selectedwpn.optimumRange;
+            float DLZScaling = 0.00054f;
             ClosureRate = (playerObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f) + (targetObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f);
             DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * DLZScaling), 0);
 
@@ -228,13 +228,15 @@ public class HUDHandling : MonoBehaviour {
             float angle = Mathf.DeltaAngle(angle1,angle2);
 			ASECaret.localRotation = Quaternion.Euler (0, 0, (aspectstartangle + angle));
 
-            //  float ASECScale;
-            //ASECaret.transform.localScale = new Vector3(ASECScale,ASECScale,0);
+            float ASECMaxScale = ASECircle.transform.localScale.x;
+            float ASECScale = ASECMaxScale - ((MslMaxRange - targetrng) / MslMaxRange * 1.0f);
+            ASECircle.transform.localScale = new Vector3(ASECScale,ASECScale,0);
 
 		} else {
             arrowPointer.localEulerAngles = arrowpointerinitpos;
             DLZCaret.gameObject.SetActive(false);
 			targetrng = 0;
+            ASECircle.transform.localScale = new Vector3(2.0f,2.0f,2.0f);
 			//targetalt = 0;
 
 		}
@@ -311,6 +313,7 @@ public class HUDHandling : MonoBehaviour {
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "SRM";
+            CCIPSight.gameObject.SetActive(false);
             AmmoCounter.text = wp.IRMAmmo.ToString();
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(true);
@@ -320,6 +323,7 @@ public class HUDHandling : MonoBehaviour {
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
+            CCIPSight.gameObject.SetActive(false);
             AmmoCounter.text = wp.SAHMAmmo.ToString();
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(true);
@@ -329,6 +333,7 @@ public class HUDHandling : MonoBehaviour {
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "MRM";
+            CCIPSight.gameObject.SetActive(false);
             AmmoCounter.text = wp.ARMAmmo.ToString();
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(true);
@@ -338,6 +343,7 @@ public class HUDHandling : MonoBehaviour {
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
 			modetext.text = "AGM";
+            CCIPSight.gameObject.SetActive(false);
             AmmoCounter.text = wp.AGMAmmo.ToString();
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(false);

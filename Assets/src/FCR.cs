@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class FCR : MonoBehaviour {
     public enum RadarModes {Air,Ground};
     public RadarModes RadarMode;
-    public RectTransform map;
 	public Camera FCRCamera;
 	public GameObject playerObject;
     public GameObject trackedObject;
@@ -28,8 +27,6 @@ public class FCR : MonoBehaviour {
 
     public GameObject radar;
 
-    private float MapWidth;
-    private float MapHeight;
     public List<RadarContact> mapEnemies;
     public GameObject[] airTargets;
     public GameObject[] groundTargets;
@@ -42,11 +39,8 @@ public class FCR : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 
-        MapWidth = map.rect.width;
-        MapHeight = map.rect.height;
         //FCRCursor = AirCursor;
         //StartCoroutine (UpdateMapPos());
-        PopulateRadarScreen();
         airTargets = GameObject.FindGameObjectsWithTag("Air");
         groundTargets = GameObject.FindGameObjectsWithTag("Ground");
         selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
@@ -65,6 +59,7 @@ public class FCR : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
         radarCursorControl(FCRCursor);
         //radarZoomControl();
         changeRadarMode();
@@ -209,18 +204,6 @@ public class FCR : MonoBehaviour {
         return closestDistanceSqr;
     }
 
-    void PopulateRadarScreen(){
-
-        if(map.GetComponentInParent<Canvas>() != null){
-
-        }
-            for(int i=0;i<airTargets.Length;i++) {
-                Instantiate(bogeyIcon, airTargets[i].transform.position, transform.rotation);
-            }
-            for(int j=0;j<groundTargets.Length;j++) {
-                Instantiate(groundIcon, groundTargets[j].transform.position, transform.rotation);
-            }
-    }
 /*
     void OnTriggerEnter(Collider collider){
         Debug.Log("Collide");

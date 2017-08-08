@@ -22,6 +22,8 @@ public class Bogey : MonoBehaviour {
     }
 
     private Image markerImage;
+    private GameObject prevTarget;
+    private GameObject nextTarget;
 
     void Start () {
         //TargetCursor = GameObject.FindGameObjectWithTag("RadarCursor").GetComponent<RectTransform>();
@@ -136,22 +138,47 @@ public class Bogey : MonoBehaviour {
     }
 
     void SelectTarget(GameObject target) {
+        //GameObject[] TargetArray;
         Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.transform.position);
-        bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
-        //if (onScreen) {
-            target.tag = "SelectedTarget";
-            markerImage.sprite = trackedMarkerSprite;
-        //}
+        target.tag = "SelectedTarget";
+        markerImage.sprite = trackedMarkerSprite;
+        //GameObject prevTarget = target;
+        //TargetArray[0] = prevTarget;
+        //GameObject newTarget;
+        /*if(prevTarget.tag == "SelectedTarget"){
+            DeselectTarget(prevTarget,newTarget);
+        }*/
     }
 
-    void DeselectTarget(GameObject target){
-        SetObjectTag(target, "SelectedTarget","Air");
+    void SwitchTarget(GameObject PrevTarget, GameObject NewTarget){
+        PrevTarget = GameObject.FindGameObjectWithTag("SelectedTarget");
+        if(NewTarget.tag == "Air"){
+            PrevTarget.tag = "Air";
+            NewTarget.tag = "SelectedTarget";
+            PrevTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = markerSprite;
+            NewTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = trackedMarkerSprite;
+        }
+        else if(NewTarget.tag == "Ground"){
+            PrevTarget.tag = "Ground";
+            NewTarget.tag = "SelectedTarget";
+            PrevTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = markerSprite;
+            NewTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = trackedMarkerSprite;
+        }
     }
 
-    void SwapTags(GameObject[] SelectedTargets, string oldtag, string newtag){
-        SelectedTargets = GameObject.FindGameObjectsWithTag("SelectedTarget");
-        if(SelectedTargets.Length > 1){
-            SelectedTargets[SelectedTargets.Length-1].tag = "Air";
+    void DeselectTarget(GameObject PrevTarget, GameObject NewTarget){
+        PrevTarget = GameObject.FindGameObjectWithTag("SelectedTarget");
+        if(NewTarget.tag == "Air"){
+            PrevTarget.tag = "Air";
+            NewTarget.tag = "SelectedTarget";
+            PrevTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = markerSprite;
+            NewTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = trackedMarkerSprite;
+        }
+        else if(NewTarget.tag == "Ground"){
+            PrevTarget.tag = "Ground";
+            NewTarget.tag = "SelectedTarget";
+            PrevTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = markerSprite;
+            NewTarget.gameObject.GetComponent<Bogey>().markerImage.sprite = trackedMarkerSprite;
         }
     }
 
