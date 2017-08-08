@@ -145,9 +145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4115926992241116}
   - component: {fileID: 54058369232554844}
-  - component: {fileID: 114084634844997294}
   - component: {fileID: 114614232004315202}
-  - component: {fileID: 114207083633433970}
   - component: {fileID: 114329784508660526}
   - component: {fileID: 114324897113930092}
   - component: {fileID: 114832441884145526}
@@ -1272,31 +1270,6 @@ MonoBehaviour:
     g: 0
     b: 0
     a: 1
---- !u!114 &114084634844997294
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1451487256712280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 235a6615124795442b98c1f03500003e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MaxEnginePower: 40
-  m_Lift: 0.002
-  m_ZeroLiftSpeed: 300
-  m_RollEffect: 1
-  m_PitchEffect: 1
-  m_YawEffect: 0.2
-  m_BankedTurnEffect: 0.5
-  m_AerodynamicEffect: 0.02
-  m_AutoTurnPitch: 0.5
-  m_AutoRollLevel: 0.2
-  m_AutoPitchLevel: 0.2
-  m_AirBrakesEffect: 3
-  m_ThrottleChangeSpeed: 0.3
-  m_DragIncreaseFactor: 0.001
 --- !u!114 &114152454878404936
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1310,34 +1283,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   rTransform: {fileID: 0}
---- !u!114 &114207083633433970
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1451487256712280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66329fe4ad8cd59478fffdc10131da1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EngineSound: {fileID: 8300000, guid: 9db9336e9f17c9744847c5fe94c1650f, type: 3}
-  m_EngineMinThrottlePitch: 0.4
-  m_EngineMaxThrottlePitch: 2
-  m_EngineFwdSpeedMultiplier: 0.002
-  m_WindSound: {fileID: 8300000, guid: 38d4d0ff7855e984285fbf430385b2aa, type: 3}
-  m_WindBasePitch: 0.2
-  m_WindSpeedPitchFactor: 0.004
-  m_WindMaxSpeedVolume: 100
-  m_AdvancedSetttings:
-    engineMinDistance: 50
-    engineMaxDistance: 1000
-    engineDopplerLevel: 1
-    engineMasterVolume: 0.5
-    windMinDistance: 10
-    windMaxDistance: 100
-    windDopplerLevel: 1
-    windMasterVolume: 0.5
 --- !u!114 &114324897113930092
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1481,8 +1426,6 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 0}
-  TargetCursor: {fileID: 0}
 --- !u!135 &135586472761774252
 SphereCollider:
   m_ObjectHideFlags: 1

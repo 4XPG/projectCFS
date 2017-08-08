@@ -10,9 +10,10 @@ public class Bogey : MonoBehaviour {
     public float blipWidth;
     public bool isActive = true;
     public BoxCollider2D blipHitbox;
+    public GameObject objectidentifier;
     private Rigidbody2D rb;
-    public FCR radar;
-    public RectTransform TargetCursor;
+/*    public FCR radar;
+    public RectTransform TargetCursor;*/
     public Image MarkerImage
     {
         get
@@ -22,12 +23,13 @@ public class Bogey : MonoBehaviour {
     }
 
     private Image markerImage;
-    private GameObject prevTarget;
+/*    private GameObject prevTarget;
     private GameObject nextTarget;
+    public GameObject AGMTarget;*/
 
     void Start () {
         //TargetCursor = GameObject.FindGameObjectWithTag("RadarCursor").GetComponent<RectTransform>();
-
+        objectidentifier = this.gameObject;
         if (!markerSprite)
         {
             Debug.LogError(" Please, specify the marker sprite.");
@@ -35,7 +37,8 @@ public class Bogey : MonoBehaviour {
 
         GameObject markerImageObject = new GameObject("Marker");
         markerImageObject.AddComponent<Image>();
-
+        ObjectIdentifier o = markerImageObject.AddComponent<ObjectIdentifier>();
+        o.objectPos = objectidentifier;
         blipHitbox = markerImageObject.AddComponent<BoxCollider2D>();
         rb = markerImageObject.AddComponent<Rigidbody2D>();
         blipHitbox.size = new Vector2(blipHeight,blipWidth);
@@ -57,17 +60,20 @@ public class Bogey : MonoBehaviour {
         markerImage.rectTransform.localScale = Vector3.one;
         markerImage.rectTransform.sizeDelta = new Vector2(markerSize, markerSize);
         markerImage.gameObject.SetActive(false);
+
     }
 
 
     void Update () {
-        TargetCursor = radar.FCRCursor;
-        CheckOverlap(TargetCursor,markerImage);
+/*        TargetCursor = radar.FCRCursor;
+        CheckOverlap(TargetCursor,markerImage);*/
         RadarDisplay controller = RadarDisplay.Instance;
         if (!controller)
         {
             return;
         }
+        if(gameObject.tag == "SelectedTarget")
+            markerImage.sprite = trackedMarkerSprite;
         RadarDisplay.Instance.checkIn(this);
         markerImage.rectTransform.rotation = Quaternion.Euler(0,0,360-gameObject.transform.rotation.eulerAngles.y);
 
@@ -112,7 +118,7 @@ public class Bogey : MonoBehaviour {
     {
         markerImage.color = new Color(1.0f, 1.0f, 1.0f, opacity);
     }
-
+/*
     bool rectOverlaps(RectTransform rectTrans1, RectTransform rectTrans2)
     {
         Rect rect1 = new Rect(rectTrans1.anchoredPosition.x, rectTrans1.anchoredPosition.y, rectTrans1.rect.width, rectTrans1.rect.height);
@@ -130,6 +136,9 @@ public class Bogey : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Z)) {
                 SelectTarget(gameObject);
                 Debug.Log(gameObject.transform.position);
+                if(radar.RadarMode == FCR.RadarModes.Ground){
+                    AGMTarget.transform.position = gameObject.transform.position;
+                }
             }
             return true;
         }
@@ -141,13 +150,13 @@ public class Bogey : MonoBehaviour {
         //GameObject[] TargetArray;
         Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.transform.position);
         target.tag = "SelectedTarget";
-        markerImage.sprite = trackedMarkerSprite;
+
         //GameObject prevTarget = target;
         //TargetArray[0] = prevTarget;
         //GameObject newTarget;
-        /*if(prevTarget.tag == "SelectedTarget"){
+        *//*if(prevTarget.tag == "SelectedTarget"){
             DeselectTarget(prevTarget,newTarget);
-        }*/
+        }*//*
     }
 
     void SwitchTarget(GameObject PrevTarget, GameObject NewTarget){
@@ -185,5 +194,5 @@ public class Bogey : MonoBehaviour {
     void SetObjectTag(GameObject g, string previousTag, string newTag){
         if (previousTag == "SelectedTarget")
             g.tag = newTag;
-    }
+    }*/
 }

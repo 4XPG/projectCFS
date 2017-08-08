@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Threat : MonoBehaviour {
+public class ThreatIdentifier : MonoBehaviour {
 	public Texture2D RWRIcon;
 
 	private Texture2D PrimaryThreatIcon;
@@ -20,6 +20,6 @@ public class Threat : MonoBehaviour {
 	}
 
 	private void ThreatStatusChange(){
-	
+
 	}
 }

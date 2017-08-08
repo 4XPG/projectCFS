@@ -374,8 +374,7 @@ MonoBehaviour:
   blipWidth: 0
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 0}
-  TargetCursor: {fileID: 0}
+  objectidentifier: {fileID: 0}
 --- !u!114 &45655549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4266,6 +4265,11 @@ Prefab:
       propertyPath: blipWidth
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114556365201799678, guid: 722522dac4b6a6547a3dffa9440be478,
+        type: 2}
+      propertyPath: AGMTarget
+      value: 
+      objectReference: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_IsPrefabParent: 0
@@ -8132,8 +8136,7 @@ MonoBehaviour:
   blipWidth: 10
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 1838537077}
+  objectidentifier: {fileID: 0}
 --- !u!54 &333618493
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8751,6 +8754,11 @@ Prefab:
       propertyPath: markerSize
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114556365201799678, guid: 722522dac4b6a6547a3dffa9440be478,
+        type: 2}
+      propertyPath: AGMTarget
+      value: 
+      objectReference: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_IsPrefabParent: 0
@@ -9889,8 +9897,7 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 494920932}
+  objectidentifier: {fileID: 0}
 --- !u!114 &541295199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9928,8 +9935,7 @@ MonoBehaviour:
 --- !u!114 &541295201
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114207083633433970, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 541295196}
   m_Enabled: 1
@@ -9969,8 +9975,7 @@ MonoBehaviour:
 --- !u!114 &541295203
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114084634844997294, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 541295196}
   m_Enabled: 1
@@ -10425,8 +10430,7 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 1838537077}
+  objectidentifier: {fileID: 0}
 --- !u!1 &625958217
 GameObject:
   m_ObjectHideFlags: 0
@@ -23654,6 +23658,7 @@ GameObject:
   - component: {fileID: 822089845}
   - component: {fileID: 822089846}
   - component: {fileID: 822089847}
+  - component: {fileID: 822089848}
   m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
@@ -23718,6 +23723,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5651eb869d9551b4aa3c3c52827040cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &822089848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 822089844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca79183430ec51a42944f01caa212499, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bogeysonmap: {fileID: 0}
+  markersonmap: []
+  airTargets: []
+  groundTargets: []
+  AGMTarget: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
+  SelectedTarget: {fileID: 0}
+  radar: {fileID: 1827753912}
+  TargetCursor: {fileID: 494920932}
+  AirmarkerSprite: {fileID: 21300000, guid: 90e17e7d67828d34fac7f3bf33ba153c, type: 3}
+  AirtrackedMarkerSprite: {fileID: 21300000, guid: b4cffdedadbccd74eafae5b015683e9f,
+    type: 3}
+  GroundmarkerSprite: {fileID: 21300000, guid: 9f223e1407ebf1a4b89d6a4ec4dc17ad, type: 3}
+  GroundtrackedMarkerSprite: {fileID: 21300000, guid: 4e57d1f0dcd5ff446a77ccf17bb73685,
+    type: 3}
 --- !u!1001 &840750151
 Prefab:
   m_ObjectHideFlags: 0
@@ -23767,6 +23797,11 @@ Prefab:
       propertyPath: TargetCursor
       value: 
       objectReference: {fileID: 1838537077}
+    - target: {fileID: 114455171937936316, guid: 722522dac4b6a6547a3dffa9440be478,
+        type: 2}
+      propertyPath: AGMTarget
+      value: 
+      objectReference: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 722522dac4b6a6547a3dffa9440be478, type: 2}
   m_IsPrefabParent: 0
@@ -30468,9 +30503,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1335957451}
   - component: {fileID: 909935101}
-  - component: {fileID: 909935100}
   - component: {fileID: 909935099}
-  - component: {fileID: 909935098}
   - component: {fileID: 909935097}
   - component: {fileID: 909935096}
   - component: {fileID: 909935095}
@@ -30516,8 +30549,7 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 494920932}
+  objectidentifier: {fileID: 0}
 --- !u!114 &909935096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30552,18 +30584,6 @@ MonoBehaviour:
   m_SpeedEffect: 0.01
   m_TakeoffHeight: 20
   m_Target: {fileID: 481766605}
---- !u!114 &909935098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114207083633433970, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 909935093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &909935099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30593,18 +30613,6 @@ MonoBehaviour:
   initialThrottle: 0.5
   MaxAoA: 0
   climbRate: 0
---- !u!114 &909935100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114084634844997294, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 909935093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &909935101
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -40758,6 +40766,11 @@ Prefab:
       propertyPath: blipWidth
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114556365201799678, guid: 722522dac4b6a6547a3dffa9440be478,
+        type: 2}
+      propertyPath: AGMTarget
+      value: 
+      objectReference: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_IsPrefabParent: 0
@@ -41197,8 +41210,7 @@ MonoBehaviour:
   blipWidth: 10
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 1838537077}
+  objectidentifier: {fileID: 0}
 --- !u!54 &1055061232
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -41726,8 +41738,7 @@ MonoBehaviour:
   blipWidth: 10
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 1838537077}
+  objectidentifier: {fileID: 0}
 --- !u!54 &1088890755
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -49443,8 +49454,7 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 494920932}
+  objectidentifier: {fileID: 0}
 --- !u!114 &1360188711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49482,8 +49492,7 @@ MonoBehaviour:
 --- !u!114 &1360188713
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114207083633433970, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1360188708}
   m_Enabled: 1
@@ -49523,8 +49532,7 @@ MonoBehaviour:
 --- !u!114 &1360188715
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114084634844997294, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1360188708}
   m_Enabled: 1
@@ -50688,6 +50696,11 @@ Prefab:
       propertyPath: blipWidth
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114556365201799678, guid: 722522dac4b6a6547a3dffa9440be478,
+        type: 2}
+      propertyPath: AGMTarget
+      value: 
+      objectReference: {fileID: 146484, guid: a374dafdc21d0314cad9b54ffe4f1bd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_IsPrefabParent: 0
@@ -62072,8 +62085,7 @@ MonoBehaviour:
   blipWidth: 0
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 0}
-  TargetCursor: {fileID: 0}
+  objectidentifier: {fileID: 0}
 --- !u!114 &1853522451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68424,8 +68436,7 @@ MonoBehaviour:
   blipWidth: 20
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 494920932}
+  objectidentifier: {fileID: 0}
 --- !u!114 &1893540181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68463,8 +68474,7 @@ MonoBehaviour:
 --- !u!114 &1893540183
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114207083633433970, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1893540178}
   m_Enabled: 1
@@ -68504,8 +68514,7 @@ MonoBehaviour:
 --- !u!114 &1893540185
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114084634844997294, guid: d4d89f731612c544791f6635d81efe17,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1893540178}
   m_Enabled: 1
@@ -68872,8 +68881,7 @@ MonoBehaviour:
   blipWidth: 10
   isActive: 1
   blipHitbox: {fileID: 0}
-  radar: {fileID: 1827753912}
-  TargetCursor: {fileID: 1838537077}
+  objectidentifier: {fileID: 0}
 --- !u!54 &1949326818
 Rigidbody:
   m_ObjectHideFlags: 0

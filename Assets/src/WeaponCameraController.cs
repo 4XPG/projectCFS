@@ -27,7 +27,13 @@ public class WeaponCameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+        Ray ray = GetComponent<Camera>().ScreenPointToRay(new Vector3(0.5f,0.5f,0));
+        RaycastHit Hit;
+        if(Physics.Raycast(ray, out Hit)){
+//set the target position
+            AGMTargetPos.transform.position = Hit.point;
+            Debug.Log(AGMTargetPos.transform.position);
+        }
 		if ((Input.GetKey ("i")) && (xRot <= maxelev)) { //slew up
 			//transform.RotateAround(transform.position,transform.right,sensY * Time.deltaTime);
 			xRot++;
@@ -50,16 +56,10 @@ public class WeaponCameraController : MonoBehaviour {
         else if (Input.GetKeyDown(name:"p") ){
             zoomchange -= 1;
         }
-		if (Input.GetKeyDown ("m")) { // designate target/create sensor point of interest
+		/*if (Input.GetKeyDown ("m")) { // designate target/create sensor point of interest
 				//Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-			Ray ray = GetComponent<Camera>().ScreenPointToRay(new Vector3(0.5f,0.5f,0));
-			RaycastHit Hit;
-			if(Physics.Raycast(ray, out Hit)){
-				//set the target position
-				AGMTargetPos.transform.position = Hit.point;
-				Debug.Log(AGMTargetPos.transform.position);
-			}
-		}
+
+		}*/
         zoomLevelSelected = Mathf.Clamp(zoomLevelSelected + zoomchange, 0, ZoomLevels.Length -1);
         gameObject.GetComponent<Camera>().fieldOfView = ZoomLevels[zoomLevelSelected];
 
