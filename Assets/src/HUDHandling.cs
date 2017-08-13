@@ -200,6 +200,7 @@ public class HUDHandling : MonoBehaviour {
 
 	// pointer arrow, DLZ envelope, target altitude & range
 		if (targetObject != null) {
+            ASECircle.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
             tgtac = targetObject.GetComponent<AeroplanePhysics>();
             arrowPointingtoTarget(arrowPointer,targetObject);
 // DLZ Bar
@@ -228,9 +229,10 @@ public class HUDHandling : MonoBehaviour {
             float angle = Mathf.DeltaAngle(angle1,angle2);
 			ASECaret.localRotation = Quaternion.Euler (0, 0, (aspectstartangle + angle));
 
-            float ASECMaxScale = ASECircle.transform.localScale.x;
-            float ASECScale = ASECMaxScale - ((MslMaxRange - targetrng) / MslMaxRange * 1.0f);
-            ASECircle.transform.localScale = new Vector3(ASECScale,ASECScale,0);
+            float ASECMinScale = ASECircle.transform.localScale.x;
+            float ASECMaxScale = 1.0f;
+            float ASECScale = ASECMinScale + ((MslMaxRange - targetrng) / MslMaxRange * 0.1f);
+            ASECircle.transform.localScale = new Vector3(ASECScale,ASECScale,ASECScale);
 
 		} else {
             arrowPointer.localEulerAngles = arrowpointerinitpos;

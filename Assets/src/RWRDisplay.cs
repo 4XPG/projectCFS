@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
 
 [AddComponentMenu("MiniMap/RWR controller")]
@@ -41,15 +40,14 @@ public class RWRDisplay : MonoBehaviour {
     private static RWRDisplay _instance;
     private float MapWidth;
     private float MapHeight;
-    public Transform playerTransform;
+    public GameObject playerTransform;
     public float radarDistance = 10;
     public float maxRadarDistance = 10;
-
     public bool rotateMap = false;
     public float scale = 1.0f;
     public float minimalOpacity = 0.3f;
 
-    public BogeyList ThreatList
+    public RWRThreatList ThreatList
     {
         get
         {
@@ -58,11 +56,13 @@ public class RWRDisplay : MonoBehaviour {
     }
 
     private RectTransform mapRect;
-    private BogeyList markerGroup;
+    private RWRThreatList markerGroup;
 
-    private Bogey threatAir;
-    private Bogey threatGround;
-
+    private GameObject[] threatAir;
+    private GameObject[] threatGround;
+    private RWRThreat highestThreat;
+    private RWRThreat[] threatList;
+    private GameObject[] TargetsonMap;
     void Awake()
     {
         if (!playerTransform)
@@ -72,7 +72,12 @@ public class RWRDisplay : MonoBehaviour {
         mapRect = GetComponent<RectTransform>();
         MapWidth = mapRect.rect.width;
         MapHeight = mapRect.rect.height;
-        markerGroup = GetComponentInChildren<BogeyList>();
+        markerGroup = GetComponentInChildren<RWRThreatList>();
+        threatList = FindObjectsOfType<RWRThreat>();
+        TargetsonMap = new GameObject[threatList.Length];
+        for(int i=0;i<TargetsonMap.Length;i++){
+            TargetsonMap[i] = threatList[i].gameObject;
+        }
         if (!markerGroup)
         {
             Debug.LogError("MerkerGroup component is missing. It must be a child of InnerMap");
@@ -81,17 +86,46 @@ public class RWRDisplay : MonoBehaviour {
 
     void Update ()
     {
+        threatAir = GameObject.FindGameObjectsWithTag("ThreatAir");
+        threatGround = GameObject.FindGameObjectsWithTag("ThreatGround");
         if (!playerTransform)
         {
             return;
+        }
+        GameObject nearestThreat = GetClosestEnemy(playerTransform,TargetsonMap);
+        if(nearestThreat.tag == "Air" && nearestThreat.GetComponent<RWRThreat>().hasRadar){
+            GameObject high = nearestThreat.GetComponent<RWRThreat>().markerImageObject;
+            high.tag = "ThreatAirHigh";
+        }
+        else if(nearestThreat.tag == "Ground" && nearestThreat.GetComponent<RWRThreat>().hasRadar){
+            GameObject high = nearestThreat.GetComponent<RWRThreat>().markerImageObject;
+            high.tag = "ThreatGroundHigh";
         }
         //mapRect.rotation = Quaternion.Euler(new Vector3(0, 0, playerTransform.eulerAngles.y));
     }
 
 
+    public GameObject GetClosestEnemy (GameObject player, GameObject[] enemies)
+    {
+        GameObject bestTarget = null;
+        float closestDistanceSqr = Mathf.Infinity;
+        Vector3 currentPosition = player.transform.position;
+        foreach(GameObject potentialTarget in enemies)
+        {
+            Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
+            float dSqrToTarget = directionToTarget.sqrMagnitude;
+            if(dSqrToTarget < closestDistanceSqr)
+            {
+                closestDistanceSqr = dSqrToTarget;
+                bestTarget = potentialTarget;
+            }
+        }
+        Debug.Log(bestTarget.tag);
+        return bestTarget;
+    }
 
 
-    public void checkIn(Bogey marker)
+    public void checkIn(RWRThreat marker)
     {
         if (!playerTransform)
         {
@@ -100,7 +134,7 @@ public class RWRDisplay : MonoBehaviour {
         float scaledRadarDistance = radarDistance * scale;
         float scaledMaxRadarDistance = maxRadarDistance * scale;
 
-        if (marker.isActive)
+        if (marker.hasRadar)
         {
             float distance = distanceToPlayer(marker.getPosition());
             float opacity = 1.0f;
@@ -121,7 +155,7 @@ public class RWRDisplay : MonoBehaviour {
             else{
 
             }
-            Vector3 posDif = marker.getPosition() - playerTransform.position;
+            Vector3 posDif = marker.getPosition() - playerTransform.transform.position;
             Vector3 newPos = new Vector3(posDif.x, posDif.z, 0);
             newPos.Normalize();
 
@@ -144,7 +178,7 @@ public class RWRDisplay : MonoBehaviour {
     private float distanceToPlayer(Vector3 other)
     {
 
-        return Vector2.Distance(new Vector2(playerTransform.position.x, playerTransform.position.z), new Vector2(other.x, other.z));
+        return Vector2.Distance(new Vector2(playerTransform.transform.position.x, playerTransform.transform.position.z), new Vector2(other.x, other.z));
     }
 
 }

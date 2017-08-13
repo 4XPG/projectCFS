@@ -38,12 +38,7 @@ public class Bogey : MonoBehaviour {
         GameObject markerImageObject = new GameObject("Marker");
         markerImageObject.AddComponent<Image>();
         ObjectIdentifier o = markerImageObject.AddComponent<ObjectIdentifier>();
-        o.objectPos = objectidentifier;
-        blipHitbox = markerImageObject.AddComponent<BoxCollider2D>();
-        rb = markerImageObject.AddComponent<Rigidbody2D>();
-        blipHitbox.size = new Vector2(blipHeight,blipWidth);
-        //blipHitbox.offset = new Vector2(blipHeight / 2,blipWidth / 2);
-            blipHitbox.isTrigger = true;
+        o.objectPos = objectidentifier;;
         RadarDisplay controller = RadarDisplay.Instance;
         if (!controller)
         {

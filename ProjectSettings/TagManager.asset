@@ -6,19 +6,20 @@ TagManager:
   tags:
   - Air
   - Ground
-  - BlankMFD
   - Radar
-  - FCR-AG
   - AGMTarget
   - PlayerAbstract
   - Weapon
   - HUD-Normal
-  - Missile
   - WPN
   - Enemy
   - SelectedTarget
   - CCIP
   - RadarCursor
+  - ThreatAir
+  - ThreatGround
+  - ThreatAirHigh
+  - ThreatGroundHigh
   layers:
   - Default
   - TransparentFX

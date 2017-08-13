@@ -33,8 +33,23 @@ public class TargetManager : MonoBehaviour {
         Debug.Log("radar contacts:"+markersonmap.Length);
         SelectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget");
         TargetCursor = radar.FCRCursor;
-        for(int i=0;i<markersonmap.Length;i++)
-        	CheckOverlap(TargetCursor,markersonmap[i].GetComponent<RectTransform>());
+        if(radar.RadarMode == FCR.RadarModes.Ground){
+            //AGMTarget.transform.position = targetpos.transform.position;
+            AGMTarget.tag = "SelectedTarget";
+        }
+        for(int i=0;i<markersonmap.Length;i++){
+            if(CheckOverlap(TargetCursor,markersonmap[i].GetComponent<RectTransform>())){
+                if (Input.GetKeyDown(KeyCode.Z)) {
+                    GameObject targetpos = markersonmap[i].gameObject.GetComponent<ObjectIdentifier>().objectPos;
+                    SelectTarget(targetpos);
+//TODO: air/ground object tag checking
+//targetpos.GetComponent<Bogey>().markerSprite = AirtrackedMarkerSprite;
+                    TargetCursor.anchoredPosition = markersonmap[i].gameObject.GetComponent<RectTransform>().anchoredPosition;
+                    Debug.Log(gameObject.transform.position);
+
+                }
+            }
+        }
 	}
 
 
@@ -52,14 +67,6 @@ public class TargetManager : MonoBehaviour {
         if(rectOverlaps(RadarCursor,marker)){
             Debug.Log("Bandit position:"+marker.anchoredPosition);
             Debug.Log(gameObject.transform.position);
-            if (Input.GetKeyDown(KeyCode.Z)) {
-                GameObject targetpos = marker.gameObject.GetComponent<ObjectIdentifier>().objectPos;
-                SelectTarget(targetpos);
-                Debug.Log(gameObject.transform.position);
-                if(radar.RadarMode == FCR.RadarModes.Ground){
-                    AGMTarget.transform.position = gameObject.transform.position;
-                }
-            }
             return true;
         }
         else
@@ -68,7 +75,7 @@ public class TargetManager : MonoBehaviour {
 
     void SelectTarget(GameObject target) {
 //GameObject[] TargetArray;
-        Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.transform.position);
+        //Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.transform.position);
         target.tag = "SelectedTarget";
 
 //GameObject prevTarget = target;

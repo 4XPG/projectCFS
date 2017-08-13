@@ -52,7 +52,7 @@ public class FCR : MonoBehaviour {
                 trackedObject = GetClosestEnemy(groundTargets);
                 trackedObject.gameObject.tag = "SelectedTarget";
             }*/
-        trackedObject = GetClosestEnemy(airTargets);
+        //trackedObject = GetClosestEnemy(airTargets);
 		//CameraPos.x = transform.position.x - playerObject.transform.position.x;
 		//CameraPos.z = transform.position.z - playerObject.transform.position.z;
 	}
@@ -170,26 +170,6 @@ public class FCR : MonoBehaviour {
     void designateTarget(){
     //raycast this
         //enemyobject.tag = "SelectedTarget";
-    }
-
-
-    GameObject GetClosestEnemy (GameObject[] enemies)
-    {
-        GameObject bestTarget = null;
-        float closestDistanceSqr = Mathf.Infinity;
-        Vector3 currentPosition = transform.position;
-        foreach(GameObject potentialTarget in enemies)
-        {
-            Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
-            float dSqrToTarget = directionToTarget.sqrMagnitude;
-            if(dSqrToTarget < closestDistanceSqr)
-            {
-                closestDistanceSqr = dSqrToTarget;
-                bestTarget = potentialTarget;
-            }
-        }
-        Debug.Log(bestTarget.tag);
-        return bestTarget;
     }
 
     public float GetClosestDistance (GameObject enemy) {
