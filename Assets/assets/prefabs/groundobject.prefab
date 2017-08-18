@@ -39,8 +39,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1913385676662136}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2124, y: 5.03, z: 2262}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalPosition: {x: 17323, y: 272.5, z: 16217}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -125,9 +125,9 @@ MonoBehaviour:
   markerSprite: {fileID: 21300000, guid: 9f223e1407ebf1a4b89d6a4ec4dc17ad, type: 3}
   trackedMarkerSprite: {fileID: 21300000, guid: 4e57d1f0dcd5ff446a77ccf17bb73685,
     type: 3}
-  markerSize: 20
-  blipHeight: 20
-  blipWidth: 20
+  markerSize: 10
+  blipHeight: 10
+  blipWidth: 10
   isActive: 1
   blipHitbox: {fileID: 0}
   objectidentifier: {fileID: 0}
@@ -150,3 +150,4 @@ MonoBehaviour:
   blipWidth: 20
   hasRadar: 1
   objectidentifier: {fileID: 0}
+  markerImageObject: {fileID: 0}

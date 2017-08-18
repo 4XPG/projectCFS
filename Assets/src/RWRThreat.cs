@@ -34,8 +34,6 @@ public class RWRThreat : MonoBehaviour {
 
         markerImageObject = new GameObject("Marker");
         markerImageObject.AddComponent<Image>();
-        ObjectIdentifier o = markerImageObject.AddComponent<ObjectIdentifier>();
-        o.objectPos = objectidentifier;;
         RWRDisplay controller = RWRDisplay.Instance;
         if (!controller)
         {

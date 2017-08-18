@@ -29,7 +29,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1755206209353076
 GameObject:
   m_ObjectHideFlags: 0
@@ -40,7 +40,6 @@ GameObject:
   - component: {fileID: 4068258386970166}
   - component: {fileID: 54913770478397636}
   - component: {fileID: 65171792500340754}
-  - component: {fileID: 114755867090395542}
   - component: {fileID: 114275785475272078}
   m_Layer: 12
   m_Name: AGM
@@ -199,15 +198,24 @@ MonoBehaviour:
   projType: 4
   fuseDelay: 0.01
   ProjSpeed: 150
-  BoostFuel: 8
-  turnRate: 0.8
-  optimumRange: 1000
   Fire: 0
   projAccel: {x: 0, y: 0, z: 0}
   lockedtarget: {fileID: 0}
   explosion: {fileID: 100010, guid: 031d08f52af1daa4f929b85221519426, type: 2}
   missileTrail: {fileID: 0}
   parentcraft: {fileID: 117986, guid: 1f9159c4be28a3c44953afcae75105fa, type: 2}
+  seekerFOV: 35
+  optimumRange: 2000000
+  overrideInitialSpeed: 0
+  initialSpeed: 150
+  BoostFuel: 5
+  acceleration: 15
+  turnRate: 30
+  timeToLive: 15
+  dropDelay: 0
+  ejectVelocity: {x: 0, y: 0, z: 0}
+  gravity: 1
+  radar: {fileID: 0}
 --- !u!114 &114397783938516956
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -221,30 +229,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minDuration: 8
   maxDuration: 10
---- !u!114 &114755867090395542
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1755206209353076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8dc44ba4a31e264f9cc67956287f92f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  proj: {fileID: 114275785475272078}
-  target: {fileID: 0}
-  player: {fileID: 117986, guid: 1f9159c4be28a3c44953afcae75105fa, type: 2}
-  lockedTarget: {fileID: 0}
-  lockedGroundTarget: {fileID: 0}
-  seekerFOV: 15
-  trackDelay: 0.3
-  pitbullRange: 11
-  turnRate: 1
-  targetAspectAngle: 0
-  maxLockDistance: 1000
-  isFire: 0
-  ETAtoTarget: 0
 --- !u!198 &198932036863568804
 ParticleSystem:
   m_ObjectHideFlags: 1

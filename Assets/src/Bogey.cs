@@ -9,8 +9,8 @@ public class Bogey : MonoBehaviour {
     public float blipHeight;
     public float blipWidth;
     public bool isActive = true;
-    public BoxCollider2D blipHitbox;
-    public GameObject objectidentifier;
+    public bool isLocked = false;
+    public Bogey objectidentifier;
     private Rigidbody2D rb;
 /*    public FCR radar;
     public RectTransform TargetCursor;*/
@@ -22,14 +22,14 @@ public class Bogey : MonoBehaviour {
         }
     }
 
-    private Image markerImage;
+    public Image markerImage;
 /*    private GameObject prevTarget;
     private GameObject nextTarget;
     public GameObject AGMTarget;*/
 
     void Start () {
         //TargetCursor = GameObject.FindGameObjectWithTag("RadarCursor").GetComponent<RectTransform>();
-        objectidentifier = this.gameObject;
+        objectidentifier = this.gameObject.GetComponent<Bogey>();
         if (!markerSprite)
         {
             Debug.LogError(" Please, specify the marker sprite.");
@@ -38,7 +38,7 @@ public class Bogey : MonoBehaviour {
         GameObject markerImageObject = new GameObject("Marker");
         markerImageObject.AddComponent<Image>();
         ObjectIdentifier o = markerImageObject.AddComponent<ObjectIdentifier>();
-        o.objectPos = objectidentifier;;
+        o.objectPos = objectidentifier;
         RadarDisplay controller = RadarDisplay.Instance;
         if (!controller)
         {

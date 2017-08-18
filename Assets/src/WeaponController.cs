@@ -4,11 +4,11 @@ public class WeaponController : MonoBehaviour {
 	public GameObject[] Payloads;
 	public GameObject gun;
 	public GameObject parentplane;
+    public GameObject lockedtarget;
     public float gunFireRate = 0.07f;
     private float nextFire = 0.0f;
     public int currentWeapon = 0;
     public int currentWeaponAmmo = 0;
-    public ProjGuidance currentGuidance;
     private int nrweapon;
     public HUDHandling HUD;
 	private string weaponHUD = "SRM"; // default mode
@@ -88,6 +88,7 @@ public class WeaponController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        lockedtarget = radar.selectedTarget;
 		if (Input.GetKeyDown (KeyCode.Alpha1)) {
 			currentWeapon = 0;
             //currentWeaponAmmo = IRMAmmo;
@@ -129,82 +130,45 @@ public class WeaponController : MonoBehaviour {
 
 	}
 
-
-    public void Launch(Projectile wpn){
-        wpn.transform.parent = null;
-        wpn.GetComponent<Rigidbody>().isKinematic = false;
-        wpn.GetComponent<BoxCollider>().enabled = true;
-        wpn.BoostFuel--;
-        if(wpn.projType == Projectile.ProjTypes.IRM || wpn.projType == Projectile.ProjTypes.ARM || wpn.projType == Projectile.ProjTypes.SAHM){ // AAMs
-            if (wpn.BoostFuel > 0) {
-//this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                Vector3 forwardforce = (wpn.transform.forward*wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
-                wpn.transform.Find("missiletrail").gameObject.SetActive(true);
-
-
-                if(wpn.GetComponent<ProjGuidance>().target != null && radar.RadarMode == FCR.RadarModes.Air){
-                    GameObject lockedtarget = wpn.GetComponent<ProjGuidance>().target;
-                    //Debug.Log("launch");
-                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.transform.LookAt(lockedtarget.transform);
-                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);}
-                else{
-                    //Debug.Log("trashed");
-                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity + (Vector3.forward * wpn.ProjSpeed);
-                }
-            } else{
-                wpn.ProjSpeed = 0.0f;
-                wpn.transform.Find("missiletrail").gameObject.GetComponent<TrailRenderer>().enabled = false;
-//this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-//stop emitting flame & smoke particle
-            }
-
+    // true: ground - AGM, air - IRM, SAHM, ARM
+    public bool targetCheck(int wpn){
+        Projectile weapon = Payloads[wpn].GetComponent<Projectile>();
+        if(lockedtarget.tag == "Ground" && weapon.projType == Projectile.ProjTypes.AGM){
+            return true;
         }
-        else if(wpn.projType == Projectile.ProjTypes.AGM){
-            if (wpn.BoostFuel>0) {
-                if(wpn.GetComponent<ProjGuidance>().target != null && radar.RadarMode == FCR.RadarModes.Ground){
-                    GameObject lockedtarget = wpn.GetComponent<ProjGuidance>().target;
-                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);}
-                else {
-                    Vector3 forwardforce = (wpn.transform.forward * wpn.ProjSpeed) + parentplane.gameObject.GetComponent<Rigidbody>().velocity;
-//wpn.ProjSpeed = 400.0f;
-                    wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-                    wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity + (Vector3.forward * wpn.ProjSpeed);
-                    wpn.transform.Find("missiletrail").gameObject.SetActive(true);
-//wpn.lockedtarget =
-//wpn.GetComponent<Rigidbody>().velocity = wpn.GetComponent<ProjGuidance>().FindInterceptVector(transform.position, wpn.ProjSpeed, wpn.lockedtarget.transform.position, wpn.lockedtarget.GetComponent<Rigidbody>().velocity);
-                }
-
-//GetComponent<Rigidbody>().velocity = guidance.FindInterceptVector(transform.position, ProjSpeed, lockedtarget.transform.position, lockedtarget.GetComponent<Rigidbody>().velocity);
-            } else{
-                wpn.ProjSpeed = 0.0f;
-                wpn.transform.Find("missiletrail").gameObject.SetActive(false);
-//stop emitting flame & smoke particle
-            }
-
+        else if (lockedtarget.tag == "Air" && weapon.projType == Projectile.ProjTypes.IRM || lockedtarget.tag == "Air" && weapon.projType == Projectile.ProjTypes.ARM || lockedtarget.tag == "Air" && weapon.projType == Projectile.ProjTypes.SAHM ){
+            return true;
         }
-        else if(wpn.projType == Projectile.ProjTypes.Bomb){
-//gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
-            float downwardSpeed;
-            float bulletSpeed;
-            float downWardSpeed = 0;
-            Vector3 newPosition = new Vector3();
-            wpn.GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity;
-            wpn.GetComponent<Rigidbody>().AddForce(Vector3.forward);
-
-        }
-        else if(wpn.projType == Projectile.ProjTypes.Gun){
+        else{
+            return false;
         }
     }
+
    public void Fire(int wpn){
        //if(currentWeaponAmmo > 0){
            //Payloads[wpn].GetComponent<Projectile>().SetFire();
            //Payloads[wpn].GetComponent<Rigidbody>().isKinematic = false;
            //Payloads[wpn].GetComponent<Rigidbody>().velocity = 300.0f *transform.forward;
-           Launch(Payloads[wpn].GetComponent<Projectile>());
+           //Launch(Payloads[wpn].GetComponent<Projectile>());
+       if(Payloads[wpn].GetComponent<Projectile>().projType == Projectile.ProjTypes.Bomb){
+           Payloads[wpn].GetComponent<Rigidbody>().isKinematic = false;
+           Payloads[wpn].GetComponent<BoxCollider>().enabled = true;
+//gameObject.GetComponent<Rigidbody>().velocity = transform.forward * (ProjSpeed + parentcraftvel);
+           float downwardSpeed;
+           float bulletSpeed;
+           float downWardSpeed = 0;
+           Vector3 newPosition = new Vector3();
+           Payloads[wpn].GetComponent<Rigidbody>().velocity = parentplane.gameObject.GetComponent<Rigidbody>().velocity;
+           Payloads[wpn].GetComponent<Rigidbody>().AddForce(Vector3.forward);
+       }
+       else{
+           if((lockedtarget == null) | targetCheck(wpn) == false){
+               lockedtarget = new GameObject();
+               Payloads[wpn].GetComponent<Projectile>().Launch(lockedtarget.transform,parentplane.gameObject.GetComponent<Rigidbody>().velocity);
+           }
+           else
+                Payloads[wpn].GetComponent<Projectile>().Launch(lockedtarget.transform,parentplane.gameObject.GetComponent<Rigidbody>().velocity);
+       }
        //}
 		//Instantiate(Payloads[wpn], Payloads[wpn].transform.position,Payloads[wpn].transform.rotation);
 
@@ -257,23 +221,6 @@ public class WeaponController : MonoBehaviour {
     public Projectile getEquippedWeapon(){
         return Payloads[currentWeapon].GetComponent<Projectile>();
     }
-/*
-    int CheckAmmo(){
-    }*/
-
-	/*void Fire(){
-    // Create the Bullet from the Bullet Prefab
-    var bullet = (GameObject)Instantiate (
-        mssl,
-        launchpos.position,
-        launchpos.rotation);
-
-    // Add velocity to the bullet
-    bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * parentplane.ForwardSpeed;
-
-    // Destroy the bullet after 2 seconds
-    Destroy(bullet, 2.0f);
-	}*/
 
 	void FireGun(){
 		// Create the Bullet from the Bullet Prefab

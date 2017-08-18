@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4141763000618594}
   - component: {fileID: 54834457805225358}
   - component: {fileID: 65277331761238538}
-  - component: {fileID: 114412914093313934}
   - component: {fileID: 114758814367275388}
   m_Layer: 12
   m_Name: AR-AAM
@@ -66,7 +65,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4141763000618594
 Transform:
   m_ObjectHideFlags: 1
@@ -258,30 +257,6 @@ TrailRenderer:
     textureMode: 0
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
---- !u!114 &114412914093313934
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1219602410879518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8dc44ba4a31e264f9cc67956287f92f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  proj: {fileID: 114758814367275388}
-  target: {fileID: 0}
-  player: {fileID: 117986, guid: 1f9159c4be28a3c44953afcae75105fa, type: 2}
-  lockedTarget: {fileID: 0}
-  lockedGroundTarget: {fileID: 0}
-  seekerFOV: 15
-  trackDelay: 0.3
-  pitbullRange: 11
-  turnRate: 1
-  targetAspectAngle: 0
-  maxLockDistance: 1000
-  isFire: 0
-  ETAtoTarget: 0
 --- !u!114 &114534971631226376
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -321,15 +296,24 @@ MonoBehaviour:
   projType: 3
   fuseDelay: 0.01
   ProjSpeed: 800
-  BoostFuel: 5
-  turnRate: 0.8
-  optimumRange: 10000
   Fire: 0
   projAccel: {x: 0, y: 0, z: 0}
   lockedtarget: {fileID: 0}
   explosion: {fileID: 100010, guid: 031d08f52af1daa4f929b85221519426, type: 2}
   missileTrail: {fileID: 0}
   parentcraft: {fileID: 117986, guid: 1f9159c4be28a3c44953afcae75105fa, type: 2}
+  seekerFOV: 65
+  optimumRange: 250000
+  overrideInitialSpeed: 0
+  initialSpeed: 150
+  BoostFuel: 5
+  acceleration: 50
+  turnRate: 30
+  timeToLive: 15
+  dropDelay: 0.3
+  ejectVelocity: {x: 0, y: -5, z: 0}
+  gravity: 1
+  radar: {fileID: 0}
 --- !u!198 &198134557427080720
 ParticleSystem:
   m_ObjectHideFlags: 1

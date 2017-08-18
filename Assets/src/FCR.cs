@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FCR : MonoBehaviour {
     public enum RadarModes {Air,Ground};
     public RadarModes RadarMode;
+    public TargetManager tg;
 	public Camera FCRCamera;
 	public GameObject playerObject;
     public GameObject trackedObject;
@@ -32,46 +33,17 @@ public class FCR : MonoBehaviour {
     public GameObject[] groundTargets;
     public GameObject selectedTarget;
     public List<GameObject> enemies;
-    public GameObject bogeyIcon;
-    public GameObject groundIcon;
-    public GameObject airIcon;
 
 	// Use this for initialization
 	void Awake () {
-
-        //FCRCursor = AirCursor;
-        //StartCoroutine (UpdateMapPos());
-        airTargets = GameObject.FindGameObjectsWithTag("Air");
-        groundTargets = GameObject.FindGameObjectsWithTag("Ground");
-        selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
-/*            if(RadarMode == RadarModes.Air){
-                trackedObject = GetClosestEnemy(airTargets);
-                trackedObject.gameObject.tag = "SelectedTarget";
-            }
-            else if(RadarMode == RadarModes.Ground){
-                trackedObject = GetClosestEnemy(groundTargets);
-                trackedObject.gameObject.tag = "SelectedTarget";
-            }*/
-        //trackedObject = GetClosestEnemy(airTargets);
-		//CameraPos.x = transform.position.x - playerObject.transform.position.x;
-		//CameraPos.z = transform.position.z - playerObject.transform.position.z;
+        selectedTarget = GameObject.Find("NoAim"); // null target init
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
+        //selectedTarget = GameObject.FindGameObjectWithTag("SelectedTarget"); // max one target lock
         radarCursorControl(FCRCursor);
-        //radarZoomControl();
         changeRadarMode();
-        if(RadarMode == RadarModes.Air){
-            //trackedObject = SelectTarget(airTargets);
-            //trackedObject.gameObject.tag = "SelectedTarget";
-        }
-        else if(RadarMode == RadarModes.Ground){
-            //trackedObject = SelectTarget(groundTargets);
-            //trackedObject.gameObject.tag = "SelectedTarget";
-        }
-
         if(playerObject.transform.position!=radar.transform.position){
 //Debug.Log("NOT SAME1");
             radar.transform.position = new Vector3 (playerObject.transform.position.x,radar.transform.position.y,playerObject.transform.position.z);
@@ -128,8 +100,7 @@ public class FCR : MonoBehaviour {
                 GroundCursor.gameObject.SetActive(true);
                 FCRCursor = GroundCursor;
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = GroundOverlay;
-                if(selectedTarget != null && selectedTarget.tag == "SelectedTarget")
-                    selectedTarget.tag = "Air";
+                selectedTarget = GameObject.Find("NoAim");
                 Debug.Log(RadarMode);
             }
         }
@@ -143,13 +114,12 @@ public class FCR : MonoBehaviour {
                 RadarMask.gameObject.GetComponent<Image>().overrideSprite = AirOverlay;
                 Debug.Log(RadarMode);
                 trackedObject = AGMTargetPos;
-                if(selectedTarget != null && selectedTarget.tag == "SelectedTarget")
-                    selectedTarget.tag = "Ground";
+                selectedTarget = GameObject.Find("NoAim");
             }
         }
 	}
 
-    GameObject SelectTarget(GameObject[] enemies){
+/*    GameObject SelectTarget(GameObject[] enemies){
         GameObject SelectedTarget = enemies[0];
         int targetindex = 0;
         if(Input.GetKeyDown(KeyCode.T)){
@@ -159,18 +129,13 @@ public class FCR : MonoBehaviour {
                 if(i==targetindex)
                     SelectedTarget = enemies[i];
             }
-            /*else{
+            *//*else{
                 SelectedTarget = enemies[0];
                 SelectedTarget.gameObject.tag = "SelectedTarget";
-            }*/
+            }*//*
         }
         return SelectedTarget;
-    }
-
-    void designateTarget(){
-    //raycast this
-        //enemyobject.tag = "SelectedTarget";
-    }
+    }*/
 
     public float GetClosestDistance (GameObject enemy) {
         float closestDistanceSqr = Mathf.Infinity;
@@ -183,57 +148,5 @@ public class FCR : MonoBehaviour {
         }
         return closestDistanceSqr;
     }
-
-/*
-    void OnTriggerEnter(Collider collider){
-        Debug.Log("Collide");
-        if(collider.tag == RadarMode.ToString()){
-            BoxCollider colliders = collider.GetComponent<BoxCollider>();
-            if(enemies.Contains(collider.gameObject)){
-            }else{
-                collider.tag = "SelectedTarget";
-                Debug.Log(collider.tag);
-                RadarContact tempEnemy = Instantiate(mapEnemies[0].gameObject).GetComponent<RadarContact>();
-                mapEnemies.Add(tempEnemy);
-                enemies.Add(collider.gameObject);
-                tempEnemy.rTransform.SetParent(map);
-                tempEnemy.rTransform.localPosition = Vector3.zero;
-                tempEnemy.rTransform.localRotation = Quaternion.Euler(Vector3.zero);
-                tempEnemy.rTransform.localScale = new Vector3(1,1,1);
-                tempEnemy.rTransform.anchoredPosition = Vector3.zero;
-                tempEnemy.gameObject.SetActive(true);
-//colliders.enabled = false;
-            }
-        }
-    }
-
-    void OnTriggerExit(Collider collider){
-        if(collider.tag == "SelectedTarget"){
-//BoxCollider colliders = collider.GetComponent<BoxCollider>();
-            if(enemies.Contains(collider.gameObject)){
-                Debug.Log("ReleaseEnemy");
-                RadarContact tempRemoval = mapEnemies[enemies.IndexOf(collider.gameObject)+1];
-                mapEnemies.Remove(tempRemoval);
-                Destroy(tempRemoval.gameObject);
-                collider.tag = RadarMode.ToString();
-                enemies.Remove(collider.gameObject);
-            }else{
-
-            }
-        }
-    }
-
-
-    IEnumerator UpdateMapPos(){
-        while (GameObject.Find("AircraftJet") != null) {
-            if(enemies.Count>0){
-                for (int i=0; i<enemies.Count; i++) {
-                    mapEnemies [i + 1].UpdatePos (enemies [i].transform.position.x - playerObject.transform.position.x , enemies [i].transform.position.z- playerObject.transform.position.z);
-                }
-            }
-            yield return new WaitForSeconds(0.2f);
-        }
-        yield return 0;
-    }*/
 
 }

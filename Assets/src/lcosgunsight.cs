@@ -5,10 +5,12 @@ using UnityEditor;
 
 public class lcosgunsight : MonoBehaviour {
 	public GameObject target;
+    public FCR radar;
     public GameObject self;
     public Camera MainCam;
     public RectTransform gunCrosshair;
     public float projSpeed;
+    public Vector3 crosshairInitPos;
 
 
     Vector3 shooterPosition;
@@ -21,25 +23,33 @@ public class lcosgunsight : MonoBehaviour {
     Vector3 interceptPoint;
 	// Use this for initialization
 	void Start () {
-        target = GameObject.FindGameObjectWithTag("SelectedTarget");
+        target = GameObject.Find("NoAim");
 		shooterPosition = self.transform.position;
         shooterVelocity = self.GetComponent<Rigidbody>() ? self.GetComponent<Rigidbody>().velocity : Vector3.zero;
+        crosshairInitPos = gunCrosshair.localPosition;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        if(target!= null){
+	void FixedUpdate () {
+        target = radar.selectedTarget;
+        if(target!= null | target.name != "NoAim"){
             targetPosition = target.transform.position;
             targetVelocity = target.GetComponent<Rigidbody>() ? target.GetComponent<Rigidbody>().velocity : Vector3.zero;
             interceptPoint = FirstOrderIntercept(shooterPosition, shooterVelocity, projSpeed, targetPosition, targetVelocity);
+        }
+        else{
+            gunCrosshair.localPosition = crosshairInitPos;
         }
         updateCrosshair();
 	}
 
     public void updateCrosshair(){
+        Vector3 relPos = target.transform.position - self.transform.position;
+        float angleToTarget = Mathf.Abs(Vector3.Angle(self.transform.forward.normalized, relPos.normalized));
+        float dist = Vector3.Distance(target.transform.position, self.transform.position);
         Vector3 perp = Vector3.Cross(Vector3.forward, self.transform.forward);
         float pdir = Vector3.Dot(perp, Vector3.up);
-        if (target != null) {
+        if (target != null | target.name != "NoAim") {
         Vector3 screenPoint = MainCam.WorldToViewportPoint(target.transform.position);
         Vector3 screenPos = MainCam.WorldToScreenPoint (interceptPoint);
         Vector2 screenPos2D = screenPos;

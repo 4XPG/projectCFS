@@ -73,6 +73,7 @@ public class HUDHandling : MonoBehaviour {
     public RectTransform CCIPSight;
     public RectTransform LCOSSight;
     public RectTransform IRMSeeker;
+    public RectTransform DLZ;
     public RectTransform DLZBar;
     public RectTransform arrowPointer;
 	public Texture IRSeekerBox;
@@ -96,6 +97,7 @@ public class HUDHandling : MonoBehaviour {
 	public Text Tgt_Rng;
 	public Text AmmoCounter;
 	public Text ClosureSpeed;
+    public Text WPNAGMAmmo;
 
     public float ClosureRate;
 
@@ -109,9 +111,11 @@ public class HUDHandling : MonoBehaviour {
     private float onduration = 0.5f;
     private float offduration = 0.5f;
     private float nextSwitch;
+    private GameObject nullObject;
 	// Use this for initialization
 	void Start () {
 		playerObject = GameObject.FindGameObjectWithTag("Player");
+        nullObject = GameObject.Find("NoAim");
         selectedwpn = wp.getEquippedWeapon();
 		iasbar = velscale.localPosition;
 		hdginitialpos = hdgscale.localPosition;
@@ -136,7 +140,7 @@ public class HUDHandling : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 	 // Altitude
-        targetObject = GameObject.FindGameObjectWithTag ("SelectedTarget");
+        targetObject = radar.selectedTarget;
    	 climbrate = ac.climbRate;
      altitude = ac.Altitude;
      rationAlttoPixel = altitude / ac.PitchAngle; // climb/dive rate?
@@ -199,46 +203,67 @@ public class HUDHandling : MonoBehaviour {
      machspeed = ias / 767.269f;
 
 	// pointer arrow, DLZ envelope, target altitude & range
-		if (targetObject != null) {
-            ASECircle.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
-            tgtac = targetObject.GetComponent<AeroplanePhysics>();
-            arrowPointingtoTarget(arrowPointer,targetObject);
+		if (targetObject != nullObject) {
+            if(radar.RadarMode == FCR.RadarModes.Ground){
+                DLZ.gameObject.SetActive(true);
+                arrowPointingtoTarget(arrowPointer,targetObject);
 // DLZ Bar
-            float distancetotarget = radar.GetClosestDistance(targetObject);
-            //selectedweaponmaxrange = selectedwpn.optimumRange;
+                float distancetotarget = radar.GetClosestDistance(targetObject);
+                ClosureRate = (playerObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f) + (targetObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f);
+
+                float DLZMaxpos = DLZCaret.localPosition.y;
+                float MslMaxRange = selectedwpn.optimumRange;
+                float DLZScaling = 0.00054f;
+                DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * DLZScaling), 0);
+
+                if(targetrng > 1)
+                    targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f; // to nautical miles
+                else if (targetrng < 1)
+                    targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f;
+            }
+            else{
+                ASECircle.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
+                tgtac = targetObject.GetComponent<AeroplanePhysics>();
+                arrowPointingtoTarget(arrowPointer,targetObject);
+// DLZ Bar
+                float distancetotarget = radar.GetClosestDistance(targetObject);
+//selectedweaponmaxrange = selectedwpn.optimumRange;
 //Debug.Log(distancetotarget);
 //float DLZDistanceRatio = ;
-            DLZCaret.gameObject.SetActive(true);
-            float DLZMaxpos = DLZCaret.localPosition.y;
-            float MslMaxRange = selectedwpn.optimumRange;
-            float DLZScaling = 0.00054f;
-            ClosureRate = (playerObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f) + (targetObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f);
-            DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * DLZScaling), 0);
+                DLZ.gameObject.SetActive(true);
+                float DLZMaxpos = DLZCaret.localPosition.y;
+                float MslMaxRange = selectedwpn.optimumRange;
+                float DLZScaling = 0.00054f;
+                ClosureRate = (playerObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f) + (targetObject.GetComponent<Rigidbody>().velocity.magnitude * 0.62f);
+                DLZCaret.localPosition = new Vector3(0, DLZMaxpos - ((MslMaxRange - targetrng) / MslMaxRange * DLZScaling), 0);
 
-            if(targetrng > 1)
-				targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f; // to nautical miles
-            else if (targetrng < 1)
-                targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f;
-			//targetalt = tgtac.Altitude * 3.28084f; // to feet
+                if(targetrng > 1)
+                    targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f; // to nautical miles
+                else if (targetrng < 1)
+                    targetrng = Vector3.Distance (targetObject.transform.position, playerObject.transform.position) * 0.00054f;
+//targetalt = tgtac.Altitude * 3.28084f; // to feet
 
-			//A-SEC caret
-            float angle1 = Mathf.Atan2(playerObject.transform.forward.y, playerObject.transform.forward.x) * Mathf.Rad2Deg;
-			Vector3 tgtaspect = targetObject.transform.position - playerObject.transform.position;
-            tgtaspect = targetObject.transform.InverseTransformDirection(tgtaspect);
-			float angle2 = Mathf.Atan2 (tgtaspect.y, tgtaspect.x) * Mathf.Rad2Deg;
-            float angle = Mathf.DeltaAngle(angle1,angle2);
-			ASECaret.localRotation = Quaternion.Euler (0, 0, (aspectstartangle + angle));
+//A-SEC caret
+                float angle1 = Mathf.Atan2(playerObject.transform.forward.y, playerObject.transform.forward.x) * Mathf.Rad2Deg;
+                Vector3 tgtaspect = targetObject.transform.position - playerObject.transform.position;
+                tgtaspect = targetObject.transform.InverseTransformDirection(tgtaspect);
+                float angle2 = Mathf.Atan2 (tgtaspect.y, tgtaspect.x) * Mathf.Rad2Deg;
+                float angle = Mathf.DeltaAngle(angle1,angle2);
+                ASECaret.localRotation = Quaternion.Euler (0, 0, (aspectstartangle + angle));
 
-            float ASECMinScale = ASECircle.transform.localScale.x;
-            float ASECMaxScale = 1.0f;
-            float ASECScale = ASECMinScale + ((MslMaxRange - targetrng) / MslMaxRange * 0.1f);
-            ASECircle.transform.localScale = new Vector3(ASECScale,ASECScale,ASECScale);
+                float ASECMinScale = ASECircle.transform.localScale.x;
+                float ASECMaxScale = 1.0f;
+                float ASECScale = ASECMinScale + ((MslMaxRange - targetrng) / MslMaxRange * 0.5f);
+                ASECircle.transform.localScale = new Vector3(ASECScale,ASECScale,ASECScale);
 
+            }
 		} else {
             arrowPointer.localEulerAngles = arrowpointerinitpos;
-            DLZCaret.gameObject.SetActive(false);
+            DLZ.gameObject.SetActive(false);
 			targetrng = 0;
             ASECircle.transform.localScale = new Vector3(2.0f,2.0f,2.0f);
+            targetrng = 0.0f;
+            ClosureRate = 0.0f;
 			//targetalt = 0;
 
 		}
@@ -253,7 +278,7 @@ public class HUDHandling : MonoBehaviour {
         dir = dir - arrowPivot.anchoredPosition;
         float angle = Mathf.Atan2(dir.x,dir.y)*Mathf.Rad2Deg;
         //bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
-        if (targetObject != null) {
+        if (targetObject != null || targetObject != nullObject) {
             //if (onScreen){
                 //arrowPivot.transform.RotateAround(Vector3.zero,Vector3.up,angle);
                 //arrowPivot.transform.EulerAngles = new Vector3(0,0,-angle);
@@ -278,36 +303,32 @@ public class HUDHandling : MonoBehaviour {
 		machind.text = (System.Math.Round(machspeed,2)).ToString();
 		curAoA.text = (Mathf.Round(ac.PitchAngle)).ToString();
 		Tgt_Rng.text = "00"+(System.Math.Round(targetrng,1)).ToString();
+        WPNAGMAmmo.text = wp.AGMAmmo.ToString();
 		//Tgt_Alt.text = (System.Math.Round(targetalt,1)).ToString();
         ClosureSpeed.text = (Mathf.Round(ClosureRate).ToString());
 	 	//GUI.Label(new Rect(20,0,100,40), heading.ToString());
      	//GUI.Label(new Rect(20,50,100,40), pitch.ToString());
      	//GUI.Label(new Rect(20,100,100,40), roll.ToString());
         ChangeHUDMode(HUDMode);
-        if(targetObject != null)
-            applyBox(targetObject);
+        if(targetObject != nullObject)
+        applyBox(targetObject);
 	}
 
     public void applyBox(GameObject target){
         Vector3 screenPoint = MainCam.WorldToViewportPoint(target.transform.position);
         Vector2 local = new Vector2();
         bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
-        if (target != null) {
-            if (onScreen){
-                screenPos = MainCam.WorldToScreenPoint (target.transform.position);
-                //TDBox.position = new Vector2(screenPos.x, Screen.height - screenPos.y);
-                //RectTransformUtility.ScreenPointToLocalPointInRectangle(TDBox.GetComponentInParent<RectTransform>(),screenPos,MainCam,out local);
-                //TDBox.localPosition = local;
+        if(targetObject != null || targetObject != nullObject){
+            if (onScreen) {
+                screenPos = MainCam.WorldToScreenPoint(target.transform.position);
+//TDBox.position = new Vector2(screenPos.x, Screen.height - screenPos.y);
+//RectTransformUtility.ScreenPointToLocalPointInRectangle(TDBox.GetComponentInParent<RectTransform>(),screenPos,MainCam,out local);
+//TDBox.localPosition = local;
                 GUI.DrawTexture(new Rect(screenPos.x - 25, Screen.height - screenPos.y - 25, 50, 50), TargetBox, ScaleMode.ScaleToFit, true, 0);
-                if(HUDMode == 0)
-                	GUI.DrawTexture(new Rect(screenPos.x - 25, Screen.height - screenPos.y - 25, 50, 50), IRSeekerBox, ScaleMode.ScaleToFit, true, 0);
-				//IRMSeeker.anchoredPosition = new Vector2(screenPos.x - 25, Screen.height - screenPos.y - 25);
+                if (HUDMode == 0)
+                    GUI.DrawTexture(new Rect(screenPos.x - 25, Screen.height - screenPos.y - 25, 50, 50), IRSeekerBox, ScaleMode.ScaleToFit, true, 0);
             }
         }
-    }
-
-    public void CalculateDLZ(GameObject target){
-
     }
 
 	public void ChangeHUDMode(int HUDMode){
@@ -319,7 +340,7 @@ public class HUDHandling : MonoBehaviour {
             AmmoCounter.text = wp.IRMAmmo.ToString();
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(true);
-            IRMSeeker.gameObject.SetActive(true);
+            IRMSeeker.gameObject.SetActive(false);
             TargetBox = NormalTDBoxImage;
 		} else if (HUDMode == 1) { // SRM HUDmode
 			//SwitchWeapon(0);
@@ -344,9 +365,10 @@ public class HUDHandling : MonoBehaviour {
 		} else if (HUDMode == 3) { // AR-AAM HUDmode
 			//SwitchWeapon(0);
 			//currentWeapon = 0;
-			modetext.text = "AGM";
+			modetext.text = "BORE";
             CCIPSight.gameObject.SetActive(false);
             AmmoCounter.text = wp.AGMAmmo.ToString();
+            AmmoCounter.gameObject.SetActive(false);
             LCOSSight.gameObject.SetActive(false);
             ASECircle.gameObject.SetActive(false);
             IRMSeeker.gameObject.SetActive(false);
